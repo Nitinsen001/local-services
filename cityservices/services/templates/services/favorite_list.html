@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}My Favourites | Local Services Marketplace{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="container">
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-heart" aria-hidden="true"></i> Saved for later</span>
+                <h1>My favourites</h1>
+                <p class="sub">Services you bookmarked while browsing the marketplace.</p>
+            </div>
+            <a class="btn btn-ghost" href="{% url 'services:service_list' %}">
+                <i class="fas fa-compass" aria-hidden="true"></i> Browse services
+            </a>
+        </div>
+
+        {% if favorites %}
+            <div class="services-grid">
+                {% for favorite in favorites %}
+                    <article class="service-card">
+                        <div class="service-media">
+                            {% if favorite.service.image %}
+                                <img src="{{ favorite.service.image.url }}" alt="{{ favorite.service.name }}">
+                            {% else %}
+                                <div class="service-thumb" aria-hidden="true">
+                                    <i class="{{ favorite.service.category.icon_class }}"></i>
+                                </div>
+                            {% endif %}
+                            <span class="service-badge">{{ favorite.service.category.name }}</span>
+                        </div>
+                        <div class="service-body">
+                            <h2 class="service-name">
+                                <a href="{% url 'services:service_detail' favorite.service.id %}">{{ favorite.service.name }}</a>
+                            </h2>
+                            <div class="service-meta">
+                                <span>
+                                    <i class="fas fa-location-dot" aria-hidden="true"></i>
+                                    {{ favorite.service.location|default:"Local area" }}
+                                </span>
+                                {% if favorite.service.review_count %}
+                                    <span>
+                                        <i class="fas fa-star" aria-hidden="true"></i>
+                                        {{ favorite.service.average_rating|floatformat:1 }} ({{ favorite.service.review_count }})
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="service-foot">
+                            <span class="price">&#8377;{{ favorite.service.price|floatformat:0 }}<small>/service</small></span>
+                            <form method="post" action="{% url 'services:toggle_favorite' favorite.service.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-ghost">
+                                    <i class="fas fa-xmark" aria-hidden="true"></i> Remove
+                                </button>
+                            </form>
+                        </div>
+                        <a class="card-link" href="{% url 'services:service_detail' favorite.service.id %}"
+                           aria-label="View details for {{ favorite.service.name }}"></a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-heart-crack" aria-hidden="true"></i>
+                <h3>No favourites saved yet</h3>
+                <p>Tap the heart on any service to keep it here for a quick booking later.</p>
+                <a class="btn btn-primary" href="{% url 'services:service_list' %}">Find a service</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

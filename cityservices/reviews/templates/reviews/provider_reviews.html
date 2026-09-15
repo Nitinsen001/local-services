@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Reviews for {{ provider.get_full_name|default:provider.username }} | Local Services Marketplace{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="container">
+        <a class="back-link" href="{% url 'services:service_list' %}?provider={{ provider.id }}">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to services
+        </a>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-star" aria-hidden="true"></i> Customer reviews</span>
+                <h1>{{ provider.get_full_name|default:provider.username }}</h1>
+                <p class="sub">Feedback left by customers after their bookings were completed.</p>
+            </div>
+            <a class="btn btn-ghost" href="{% url 'services:service_list' %}?provider={{ provider.id }}">
+                <i class="fas fa-list" aria-hidden="true"></i> View services
+            </a>
+        </div>
+
+        <div class="split">
+            <!-- Summary -->
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>Rating summary</h2>
+                </div>
+
+                <div class="rating-hero">
+                    <div>
+                        <div class="score">
+                            {% if total_reviews %}{{ average_rating }}{% else %}&mdash;{% endif %}
+                        </div>
+                        <div class="stars-row" aria-hidden="true">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= average_rating %}
+                                    <span class="star-on">&starf;</span>
+                                {% else %}
+                                    <span class="star-off">&starf;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="meta">
+                            {{ total_reviews }} review{{ total_reviews|pluralize }}
+                            {% if total_reviews %} &middot; {{ positive_percent }}% rated 4 or 5 stars{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if total_reviews %}
+                    <div class="mt-md">
+                        {% for row in distribution %}
+                            <div class="bar-row">
+                                <span>{{ row.stars }} star{{ row.stars|pluralize }}</span>
+                                <span class="bar-track">
+                                    <span class="bar-fill" style="width: {{ row.percent }}%"></span>
+                                </span>
+                                <span>{{ row.count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="grid-2 mt-md">
+                    <div class="stat-card">
+                        <span class="stat-icon" aria-hidden="true"><i class="fas fa-thumbs-up"></i></span>
+                        <div class="stat-value">{{ positive_percent }}%</div>
+                        <div class="stat-label">Positive reviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon" aria-hidden="true"><i class="fas fa-briefcase"></i></span>
+                        <div class="stat-value">{{ provider.service_set.count }}</div>
+                        <div class="stat-label">Published services</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews list -->
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>All reviews</h2>
+                    <span class="badge badge-info">{{ total_reviews }} total</span>
+                </div>
+
+                {% if reviews %}
+                    <div class="stack-md">
+                        {% for review in reviews %}
+                            <article class="review-card">
+                                <div class="review-head">
+                                    <div class="reviewer">
+                                        <span class="avatar avatar-sm" aria-hidden="true">
+                                            <span class="avatar-initials">{{ review.user.first_name|default:review.user.username|slice:":1" }}</span>
+                                        </span>
+                                        <span>
+                                            <span class="name">{{ review.user.get_full_name|default:review.user.username }}</span>
+                                            <span class="date">{{ review.created_at|date:"M d, Y" }}</span>
+                                        </span>
+                                    </div>
+                                    <div class="stars-row" aria-label="{{ review.rating }} out of 5">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <span class="star-on" aria-hidden="true">&starf;</span>
+                                            {% else %}
+                                                <span class="star-off" aria-hidden="true">&starf;</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="muted">&nbsp;{{ review.rating }}/5</span>
+                                    </div>
+                                </div>
+
+                                <p class="review-body">{{ review.comment }}</p>
+
+                                {% if review.service %}
+                                    <span class="review-service">
+                                        <i class="fas fa-briefcase" aria-hidden="true"></i> {{ review.service.name }}
+                                    </span>
+                                {% endif %}
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty">
+                        <i class="fas fa-comment-dots" aria-hidden="true"></i>
+                        <h3>No reviews yet</h3>
+                        <p>Reviews appear here as soon as customers complete a booking and rate this provider.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

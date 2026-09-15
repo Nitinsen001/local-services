@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Services Marketplace | Home</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Inter for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        /* RESET & GLOBAL */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #e9f4ff 0%, #d4e9ff 100%);
+            color: #1a2c3e;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* SKY BLUE THEME VARIABLES */
+        :root {
+            --sky-50: #f0f9ff;
+            --sky-100: #e0f2fe;
+            --sky-200: #bae6fd;
+            --sky-300: #7dd3fc;
+            --sky-400: #38bdf8;
+            --sky-500: #0ea5e9;
+            --sky-600: #0284c7;
+            --sky-700: #0369a1;
+            --sky-800: #075985;
+            --sky-900: #0c4a6e;
+            --shadow-sm: 0 8px 20px -6px rgba(2, 132, 199, 0.15);
+            --shadow-md: 0 20px 30px -10px rgba(2, 132, 199, 0.2);
+            --shadow-lg: 0 30px 50px -15px rgba(2, 132, 199, 0.25);
+            --radius-card: 28px;
+            --radius-btn: 50px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* BACKGROUND DECORATIONS (animated) */
+        .bg-circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.4;
+            z-index: 0;
+            pointer-events: none;
+            animation: float 18s infinite alternate ease-in-out;
+        }
+
+        .circle-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--sky-300);
+            top: -120px;
+            left: -100px;
+            animation-duration: 22s;
+        }
+
+        .circle-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--sky-400);
+            bottom: -150px;
+            right: -100px;
+            animation-duration: 28s;
+            animation-delay: -5s;
+        }
+
+        .circle-3 {
+            width: 300px;
+            height: 300px;
+            background: var(--sky-200);
+            top: 40%;
+            left: 30%;
+            animation-duration: 20s;
+            animation-delay: -8s;
+            opacity: 0.25;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(2px);
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 32px;
+            transition: var(--transition);
+        }
+
+        .header:hover {
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sky-800);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-icon {
+            background: var(--sky-500);
+            color: white;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 14px -6px var(--sky-500);
+            transition: var(--transition);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(15deg) scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--sky-800);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 40px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            background: var(--sky-100);
+            color: var(--sky-700);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            background: var(--sky-500);
+            color: white;
+            box-shadow: 0 6px 14px -4px var(--sky-500);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .notification {
+            position: relative;
+            background: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            color: var(--sky-700);
+        }
+
+        .notification:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+            background: var(--sky-50);
+        }
+
+        .notification a {
+            color: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f43f5e;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 30px;
+            border: 2px solid white;
+        }
+
+        /* MAIN CONTENT LAYOUT */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 28px;
+        }
+
+        /* LEFT PANEL */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+
+        /* SEARCH SECTION */
+        .search-section {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: var(--transition);
+        }
+
+        .search-section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 16px 24px;
+            border: 2px solid transparent;
+            border-radius: 60px;
+            background: white;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.02);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--sky-400);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+        }
+
+        .search-btn {
+            padding: 16px 36px;
+            background: var(--sky-500);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 18px -8px var(--sky-500);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            background: var(--sky-600);
+            transform: scale(1.02);
+            box-shadow: 0 14px 24px -8px var(--sky-600);
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-tabs .nav-tab {
+            background: white;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--sky-800);
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px -6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-tabs .nav-tab:hover {
+            background: var(--sky-100);
+            transform: translateY(-3px);
+            color: var(--sky-700);
+        }
+
+        .nav-tabs .nav-tab.active {
+            background: var(--sky-500);
+            color: white;
+            box-shadow: 0 10px 18px -8px var(--sky-500);
+        }
+
+        /* SECTION TITLES */
+        .section-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title h2,
+        .section-title h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--sky-900);
+            letter-spacing: -0.02em;
+        }
+
+        .section-title h3 {
+            font-size: 1.3rem;
+        }
+
+        .view-all {
+            color: var(--sky-600);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            padding: 6px 12px;
+            border-radius: 30px;
+        }
+
+        .view-all:hover {
+            background: var(--sky-100);
+            color: var(--sky-800);
+            transform: translateX(4px);
+        }
+
+        .view-all::after {
+            content: '→';
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .view-all:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* FEATURED SERVICES GRID */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            animation: cardFadeUp 0.6s ease backwards;
+        }
+
+        .service-card:nth-child(1) { animation-delay: 0.1s; }
+        .service-card:nth-child(2) { animation-delay: 0.2s; }
+        .service-card:nth-child(3) { animation-delay: 0.3s; }
+        .service-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes cardFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .service-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .service-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--sky-500);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 12px -4px var(--sky-500);
+            z-index: 2;
+        }
+
+        .service-info {
+            padding: 16px 16px 8px;
+        }
+
+        .service-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--sky-900);
+            margin-bottom: 4px;
+        }
+
+        .service-area {
+            font-size: 0.8rem;
+            color: #5a6e7e;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .service-rating {
+            padding: 0 16px 16px;
+            font-weight: 600;
+            color: var(--sky-700);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .service-rating i {
+            color: #fbbf24;
+        }
+
+        /* SERVICE CATEGORIES */
+        .service-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .category-item {
+            background: white;
+            padding: 16px 28px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .category-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            background: var(--sky-50);
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-icon {
+            color: var(--sky-500);
+            font-size: 1.4rem;
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: var(--sky-800);
+        }
+
+        /* PROVIDER LIST */
+        .provider-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .provider-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            animation: cardFadeUp 0.5s ease backwards;
+        }
+
+        .provider-card:nth-child(1) { animation-delay: 0.1s; }
+        .provider-card:nth-child(2) { animation-delay: 0.2s; }
+        .provider-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .provider-card:hover {
+            transform: translateX(8px);
+            box-shadow: var(--shadow-md);
+            background: var(--sky-50);
+        }
+
+        .provider-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .provider-info {
+            flex: 1;
+        }
+
+        .provider-name {
+            font-weight: 700;
+            color: var(--sky-900);
+            font-size: 1.05rem;
+        }
+
+        .provider-service {
+            font-size: 0.85rem;
+            color: #5f7d95;
+            margin-top: 2px;
+        }
+
+        .provider-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .price-tag {
+            font-weight: 700;
+            color: var(--sky-700);
+            background: var(--sky-50);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+
+        .book-btn {
+            background: var(--sky-500);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 6px 12px -6px var(--sky-500);
+            white-space: nowrap;
+        }
+
+        .book-btn:hover {
+            background: var(--sky-600);
+            transform: scale(1.05);
+            box-shadow: 0 10px 16px -6px var(--sky-600);
+        }
+
+        /* RIGHT PANEL */
+        .right-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-card);
+            padding: 28px 22px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            transition: var(--transition);
+        }
+
+        .right-panel:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 30px;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 14px;
+            transition: var(--transition);
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--sky-900);
+        }
+
+        .profile-title {
+            color: var(--sky-600);
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .profile-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+            color: #fbbf24;
+        }
+
+        .profile-rating span {
+            color: var(--sky-700);
+            margin-left: 6px;
+            font-weight: 600;
+        }
+
+        .right-panel .section {
+            margin-bottom: 28px;
+        }
+
+        .right-panel h4 {
+            font-weight: 700;
+            color: var(--sky-900);
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .portfolio-item {
+            border-radius: 18px;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .portfolio-item:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* CALENDAR */
+        .calendar {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-weight: 600;
+            color: var(--sky-800);
+        }
+
+        .calendar-header div {
+            display: flex;
+            gap: 6px;
+        }
+
+        .calendar-header button {
+            background: none;
+            border: none;
+            color: var(--sky-600);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .calendar-header button:hover {
+            background: var(--sky-100);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .calendar-day {
+            padding: 6px 0;
+            border-radius: 10px;
+            color: var(--sky-800);
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .calendar-day.available {
+            background: var(--sky-100);
+            color: var(--sky-800);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .calendar-day.available:hover {
+            background: var(--sky-300);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .booking-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--sky-500);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 12px 20px -10px var(--sky-500);
+            margin-top: 8px;
+        }
+
+        .booking-btn:hover {
+            background: var(--sky-600);
+            transform: translateY(-3px);
+            box-shadow: 0 18px 28px -10px var(--sky-600);
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 60px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 40px 30px 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--sky-800);
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column a {
+            text-decoration: none;
+            color: #4f6b7f;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-block;
+        }
+
+        .footer-column a:hover {
+            color: var(--sky-600);
+            transform: translateX(4px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(2, 132, 199, 0.1);
+            color: #4f6b7f;
+            font-size: 0.85rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .right-panel {
+                position: static;
+            }
+            .header {
+                border-radius: 30px;
+                padding: 16px 20px;
+            }
+            .nav-links a {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 12px;
+            }
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            .user-actions {
+                justify-content: flex-end;
+            }
+            .search-box {
+                flex-direction: column;
+            }
+            .search-btn {
+                justify-content: center;
+            }
+            .provider-card {
+                flex-wrap: wrap;
+            }
+            .provider-actions {
+                align-items: flex-start;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 8px;
+            }
+        }
+
+        /* Additional micro-interactions */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10,10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+        .ripple:active:after {
+            transform: scale(0,0);
+            opacity: .3;
+            transition: 0s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Decorations -->
+    <div class="bg-circle circle-1"></div>
+    <div class="bg-circle circle-2"></div>
+    <div class="bg-circle circle-3"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">🔧</div>
+                Local Services Marketplace
+            </div>
+            <nav class="nav-links">
+                <a href="{% url 'services:service_list' %}" class="nav-tab active">Browse Categories</a>
+                <a href="{% url 'about' %}" class="nav-tab">How It Works</a>
+                {% if user.is_authenticated %}
+                    <a href="{% if user.profile.is_provider %}{% url 'accounts:provider_dashboard' %}{% else %}{% url 'accounts:user_dashboard' %}{% endif %}">Dashboard</a>
+                    <a href="{% url 'accounts:profile' %}">Profile</a>
+                    <a href="{% url 'accounts:notifications' %}">Notifications{% if unread_notification_count %} ({{ unread_notification_count }}){% endif %}</a>
+                    <a href="{% url 'accounts:logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'accounts:register' %}">Become a Provider</a>
+                    <a href="{% url 'accounts:login' %}">Login</a>
+                    <a href="{% url 'accounts:register' %}">Signup</a>
+                {% endif %}
+            </nav>
+            <div class="user-actions">
+                <div class="notification">
+                    <a href="{% if user.is_authenticated %}{% url 'accounts:notifications' %}{% else %}{% url 'accounts:login' %}{% endif %}" aria-label="Notifications">
+                        <i class="fas fa-bell"></i>
+                        {% if unread_notification_count %}<div class="notification-badge">{{ unread_notification_count }}</div>{% endif %}
+                    </a>
+                </div>
+                <div class="notification">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel -->
+            <div class="left-panel">
+                <!-- Search Section -->
+                <div class="search-section">
+                    <form class="search-box" method="get" action="{% url 'services:service_list' %}">
+                        <input type="search" name="q" value="{{ query }}" class="search-input" placeholder="Search for plumbers, electricians, cleaners..." aria-label="Search services">
+                        <button class="search-btn ripple"><i class="fas fa-search"></i> Search</button>
+                    </form>
+                    <div class="nav-tabs">
+                        <a href="{% url 'services:service_list' %}" class="nav-tab active">All Services</a>
+                        <a href="{% url 'services:service_list' %}?filter=top_rated" class="nav-tab">Top Rated</a>
+                        <a href="{% url 'services:service_list' %}?filter=near_me" class="nav-tab">Near Me</a>
+                        <a href="{% url 'services:service_list' %}?filter=new" class="nav-tab">New Providers</a>
+                    </div>
+                </div>
+
+                <!-- Featured Services -->
+                <div class="featured-services">
+                    <div class="section-title">
+                        <h2>Featured Services</h2>
+                        <a href="{% url 'services:service_list' %}" class="view-all">View All</a>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=300&h=200&fit=crop" alt="Plumbing">
+                            <div class="service-badge">Featured</div>
+                            <div class="service-info">
+                                <div class="service-name">Emergency Plumbing</div>
+                                <div class="service-area">24/7 quick fix for leaks & clogs</div>
+                            </div>
+                            <div class="service-rating"><i class="fas fa-star"></i> 4.9</div>
+                        </div>
+                        <div class="service-card">
+                            <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop" alt="Electrical">
+                            <div class="service-badge">Featured</div>
+                            <div class="service-info">
+                                <div class="service-name">Wiring & Lighting</div>
+                                <div class="service-area">Certified electricians for your home</div>
+                            </div>
+                            <div class="service-rating"><i class="fas fa-star"></i> 4.8</div>
+                        </div>
+                        <div class="service-card">
+                            <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=300&h=200&fit=crop" alt="Cleaning">
+                            <div class="service-badge">Featured</div>
+                            <div class="service-info">
+                                <div class="service-name">Deep Cleaning</div>
+                                <div class="service-area">Sparkling clean home or office</div>
+                            </div>
+                            <div class="service-rating"><i class="fas fa-star"></i> 4.9</div>
+                        </div>
+                        <div class="service-card">
+                            <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=300&h=200&fit=crop" alt="Appliance Repair">
+                            <div class="service-badge">Featured</div>
+                            <div class="service-info">
+                                <div class="service-name">Appliance Repair</div>
+                                <div class="service-area">Fridge, AC, washing machine experts</div>
+                            </div>
+                            <div class="service-rating"><i class="fas fa-star"></i> 4.7</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Categories -->
+                <div class="section">
+                    <div class="section-title">
+                        <h2>Service Categories</h2>
+                    </div>
+                    <div class="service-categories">
+                        <a class="category-item" href="{% url 'services:service_list' %}?category=plumbing">
+                            <div class="category-icon"><i class="fas fa-wrench"></i></div>
+                            <div class="category-name">Plumbing</div>
+                        </a>
+                        <a class="category-item" href="{% url 'services:service_list' %}?category=electrical">
+                            <div class="category-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="category-name">Electrical</div>
+                        </a>
+                        <a class="category-item" href="{% url 'services:service_list' %}?category=cleaning">
+                            <div class="category-icon"><i class="fas fa-broom"></i></div>
+                            <div class="category-name">Cleaning</div>
+                        </a>
+                        <a class="category-item" href="{% url 'services:service_list' %}?category=painting">
+                            <div class="category-icon"><i class="fas fa-paint-roller"></i></div>
+                            <div class="category-name">Painting</div>
+                        </a>
+                        <a class="category-item" href="{% url 'services:service_list' %}?category=moving">
+                            <div class="category-icon"><i class="fas fa-truck"></i></div>
+                            <div class="category-name">Moving</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Top Service Providers -->
+                <div class="search-results">
+                    <div class="section-title">
+                        <h3>Top Service Providers</h3>
+                        <a href="{% url 'services:service_list' %}" class="view-all">View All</a>
+                    </div>
+                    <div class="provider-list">
+                        <div class="provider-card">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" alt="Rajesh" class="provider-avatar">
+                            <div class="provider-info">
+                                <div class="provider-name">Rajesh Kumar</div>
+                                <div class="provider-service">Plumbing & Pipefitting</div>
+                            </div>
+                            <div class="provider-actions">
+                                <div class="price-tag">From ₹499/service</div>
+                                <a class="book-btn" href="{% url 'services:service_list' %}?q=plumbing">View Services</a>
+                            </div>
+                        </div>
+                        <div class="provider-card">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" alt="Priya" class="provider-avatar">
+                            <div class="provider-info">
+                                <div class="provider-name">Priya Sharma</div>
+                                <div class="provider-service">Home Deep Cleaning</div>
+                            </div>
+                            <div class="provider-actions">
+                                <div class="price-tag">From ₹799/service</div>
+                                <a class="book-btn" href="{% url 'services:service_list' %}?q=cleaning">View Services</a>
+                            </div>
+                        </div>
+                        <div class="provider-card">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face" alt="Amit" class="provider-avatar">
+                            <div class="provider-info">
+                                <div class="provider-name">Amit Verma</div>
+                                <div class="provider-service">Electrical Repairs</div>
+                            </div>
+                            <div class="provider-actions">
+                                <div class="price-tag">From ₹599/service</div>
+                                <a class="book-btn" href="{% url 'services:service_list' %}?q=electrical">View Services</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <!-- Welcome / profile area (non‑provider version) -->
+                <div class="profile-header">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face" alt="Welcome" class="profile-avatar">
+                    <div class="profile-name">Welcome!</div>
+                    <div class="profile-title">Find Local Services</div>
+                    <div class="profile-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span>(4.8)</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h4>Quick Actions</h4>
+                    <a class="booking-btn ripple" href="{% url 'accounts:register' %}">Become a Provider</a>
+                    <br><br>
+                    <a class="booking-btn ripple" href="{% url 'services:service_list' %}">Browse Services</a>
+                </div>
+
+                <!-- Portfolio (still visible, but with placeholder) -->
+                <div class="section">
+                    <h4>Top Rated Work</h4>
+                    <div class="portfolio-grid">
+                        <div class="portfolio-item"><img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=150&h=150&fit=crop" alt="Work 1"></div>
+                        <div class="portfolio-item"><img src="https://images.unsplash.com/photo-1556909075-f3e64d6761b4?w=150&h=150&fit=crop" alt="Work 2"></div>
+                        <div class="portfolio-item"><img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=150&h=150&fit=crop" alt="Work 3"></div>
+                        <div class="portfolio-item"><img src="https://images.unsplash.com/photo-1527515862127-a4fc05baf7a5?w=150&h=150&fit=crop" alt="Work 4"></div>
+                    </div>
+                </div>
+
+                <!-- Calendar preview -->
+                <div class="section">
+                    <h4>Availability</h4>
+                    <div class="calendar">
+                        <div class="calendar-header">
+                            <span>April 2025</span>
+                            <div>
+                                <button><i class="fas fa-chevron-left"></i></button>
+                                <button><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day">Su</div>
+                            <div class="calendar-day">Mo</div>
+                            <div class="calendar-day">Tu</div>
+                            <div class="calendar-day">We</div>
+                            <div class="calendar-day">Th</div>
+                            <div class="calendar-day">Fr</div>
+                            <div class="calendar-day">Sa</div>
+                            <div class="calendar-day">1</div>
+                            <div class="calendar-day">2</div>
+                            <div class="calendar-day available">3</div>
+                            <div class="calendar-day available">4</div>
+                            <div class="calendar-day">5</div>
+                            <div class="calendar-day">6</div>
+                            <div class="calendar-day available">7</div>
+                            <div class="calendar-day available">8</div>
+                            <div class="calendar-day">9</div>
+                            <div class="calendar-day available">10</div>
+                            <div class="calendar-day">11</div>
+                            <div class="calendar-day">12</div>
+                            <div class="calendar-day">13</div>
+                            <div class="calendar-day available">14</div>
+                            <div class="calendar-day available">15</div>
+                            <div class="calendar-day">16</div>
+                            <div class="calendar-day available">17</div>
+                            <div class="calendar-day">18</div>
+                            <div class="calendar-day">19</div>
+                            <div class="calendar-day">20</div>
+                            <div class="calendar-day available">21</div>
+                            <div class="calendar-day available">22</div>
+                            <div class="calendar-day">23</div>
+                            <div class="calendar-day available">24</div>
+                            <div class="calendar-day">25</div>
+                            <div class="calendar-day">26</div>
+                            <div class="calendar-day">27</div>
+                            <div class="calendar-day available">28</div>
+                            <div class="calendar-day">29</div>
+                            <div class="calendar-day">30</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Local Services</h3>
+                    <ul>
+                        <li><a href="{% url 'about' %}">About Us</a></li>
+                        <li><a href="{% url 'about' %}">How It Works</a></li>
+                        <li><a href="{% url 'contact' %}">Careers</a></li>
+                        <li><a href="{% url 'contact' %}">Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>For Customers</h3>
+                    <ul>
+                        <li><a href="{% url 'services:service_list' %}">Browse Services</a></li>
+                        <li><a href="{% url 'bookings:my_bookings' %}">My Bookings</a></li>
+                        <li><a href="{% url 'contact' %}">Customer Support</a></li>
+                        <li><a href="{% url 'about' %}">Safety Tips</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>For Providers</h3>
+                    <ul>
+                        <li><a href="{% url 'accounts:register' %}">Become a Provider</a></li>
+                        <li><a href="{% url 'services:add_service' %}">Provider Resources</a></li>
+                        <li><a href="{% url 'about' %}">Success Stories</a></li>
+                        <li><a href="{% url 'contact' %}">Provider Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="{% url 'contact' %}">Help Center</a></li>
+                        <li><a href="{% url 'contact' %}">Contact Support</a></li>
+                        <li><a href="{% url 'contact' %}">Feedback</a></li>
+                        <li><a href="{% url 'about' %}">Community</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Local Services Marketplace. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Service card hover effects (with smooth transition already in CSS)
+            const serviceCards = document.querySelectorAll('.service-card');
+            serviceCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    // already handled by CSS, but keep for any extra if needed
+                });
+                card.addEventListener('mouseleave', function() {
+                    // CSS handles it
+                });
+            });
+
+            // Provider card interactions
+            const providerCards = document.querySelectorAll('.provider-card');
+            providerCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    providerCards.forEach(c => c.style.background = 'white');
+                    this.style.background = 'var(--sky-100)';
+                });
+            });
+
+            // Calendar day selection
+            const calendarDays = document.querySelectorAll('.calendar-day.available');
+            calendarDays.forEach(day => {
+                day.addEventListener('click', function() {
+                    if (this.style.background === 'rgb(14, 165, 233)') {
+                        this.style.background = '';
+                        this.style.color = '';
+                    } else {
+                        this.style.background = 'var(--sky-500)';
+                        this.style.color = 'white';
+                    }
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

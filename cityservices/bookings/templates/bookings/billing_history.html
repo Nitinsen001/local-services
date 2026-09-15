@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Billing &amp; Payments | Local Services Marketplace{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="container container-medium">
+        <a class="back-link" href="{% url 'accounts:profile' %}">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to profile
+        </a>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-receipt" aria-hidden="true"></i> Payments</span>
+                <h1>Billing &amp; payments</h1>
+                <p class="sub">Payment status for every service you booked. Online payment is optional &mdash; pay-after-service is the default.</p>
+            </div>
+        </div>
+
+        {% if bookings %}
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Service</th>
+                            <th scope="col">Booking date</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            <tr>
+                                <td>
+                                    <a class="text-link" href="{% url 'services:service_detail' booking.service.id %}">{{ booking.service.name }}</a>
+                                    <div class="item-sub">Booking #{{ booking.id }}</div>
+                                </td>
+                                <td>{{ booking.date|date:"M d, Y h:i A" }}</td>
+                                <td><strong>&#8377;{{ booking.service.price|floatformat:0 }}</strong></td>
+                                <td>
+                                    {% if booking.payment %}
+                                        <span class="badge pay-{{ booking.payment.status }}">{{ booking.payment.get_status_display }}</span>
+                                    {% else %}
+                                        <span class="badge badge-muted">Pay after service</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-receipt" aria-hidden="true"></i>
+                <h3>No billing records yet</h3>
+                <p>Once you book a service its payment status shows up here.</p>
+                <a class="btn btn-primary" href="{% url 'services:service_list' %}">Browse services</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

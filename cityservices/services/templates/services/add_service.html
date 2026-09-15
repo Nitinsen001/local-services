@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="add-service-section">
+    <div class="add-service-container">
+        <!-- Header -->
+        <div class="add-service-header">
+            <h1>Add New Service</h1>
+            <p class="subtitle">List your service and start getting bookings</p>
+        </div>
+
+        <!-- Service Form -->
+        <div class="service-form-card">
+            <div class="form-header">
+                <h2>Service Details</h2>
+                <p>Fill in the information about your service</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="service-form">
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3 class="section-title">Basic Information</h3>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-tag"></i>
+                                Service Name
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="e.g., Professional Home Cleaning" required>
+                            <div class="form-help">Choose a clear and descriptive name for your service</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category" class="form-label">
+                                <i class="fas fa-layer-group"></i>
+                                Category
+                                <span class="required">*</span>
+                            </label>
+                            <select id="category" name="category" class="form-select" required>
+                                <option value="">Select a category</option>
+                                <option value="cleaning">Cleaning</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="painting">Painting</option>
+                                <option value="carpentry">Carpentry</option>
+                                <option value="gardening">Gardening</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price" class="form-label">
+                                <i class="fas fa-rupee-sign"></i>
+                                Price
+                                <span class="required">*</span>
+                            </label>
+                            <div class="price-input-container">
+                                <span class="price-prefix">₹</span>
+                                <input type="number" id="price" name="price" class="form-input price-input" placeholder="0.00" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-help">Set your service price in Indian Rupees</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Service Location
+                            </label>
+                            <input type="text" id="location" name="location" class="form-input" placeholder="e.g., Mumbai, Maharashtra">
+                            <div class="form-help">City or area where you provide this service</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3 class="section-title">Service Description</h3>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left"></i>
+                            Description
+                            <span class="required">*</span>
+                        </label>
+                        <textarea id="description" name="description" class="form-textarea" placeholder="Describe your service in detail. What do you offer? What makes your service special?" required></textarea>
+                        <div class="form-help">Be detailed and highlight your expertise and what customers can expect</div>
+                    </div>
+                </div>
+
+                <!-- Service Image Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h3 class="section-title">Service Image</h3>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-image"></i>
+                            Upload Image
+                        </label>
+                        <div class="image-upload-area" id="image-upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="upload-text">Upload Service Image</div>
+                            <div class="upload-subtext">Drag & drop your image here or click to browse</div>
+                            <div class="browse-btn">Browse Files</div>
+                            <input type="file" id="image" name="image" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="image-preview" id="image-preview">
+                            <img src="" alt="Preview" class="preview-image">
+                            <div class="upload-subtext" style="margin-top: 10px;">Image Preview</div>
+                        </div>
+                        <div class="form-help">Recommended: 800x600px JPG or PNG (Max 5MB)</div>
+                    </div>
+                </div>
+
+                <!-- Availability Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="section-title">Availability</h3>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <div class="toggle-group">
+                            <div class="toggle-label">Make this service available for booking</div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="available" name="available" class="toggle-checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-help">Toggle off to temporarily hide your service from customers</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{% url 'services:service_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Service
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image upload functionality
+        const imageUploadArea = document.getElementById('image-upload-area');
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImage = imagePreview.querySelector('.preview-image');
+        const browseBtn = imageUploadArea.querySelector('.browse-btn');
+
+        // Click on upload area or browse button
+        imageUploadArea.addEventListener('click', function() {
+            imageInput.click();
+        });
+
+        browseBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            imageInput.click();
+        });
+
+        // Handle file selection
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        imageUploadArea.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please select a valid image file (JPG, PNG, etc.)');
+                }
+            }
+        });
+
+        // Drag and drop functionality
+        imageUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+
+        imageUploadArea.addEventListener('dragleave', function() {
+            imageUploadArea.classList.remove('dragover');
+        });
+
+        imageUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                imageInput.files = e.dataTransfer.files;
+                const event = new Event('change');
+                imageInput.dispatchEvent(event);
+            } else {
+                alert('Please drop a valid image file');
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('.service-form');
+        form.addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+            const category = document.getElementById('category').value;
+            const price = document.getElementById('price').value;
+            const description = document.getElementById('description').value.trim();
+
+            if (!name) {
+                e.preventDefault();
+                alert('Please enter a service name');
+                document.getElementById('name').focus();
+                return;
+            }
+
+            if (!category) {
+                e.preventDefault();
+                alert('Please select a category');
+                document.getElementById('category').focus();
+                return;
+            }
+
+            if (!price || parseFloat(price) <= 0) {
+                e.preventDefault();
+                alert('Please enter a valid price');
+                document.getElementById('price').focus();
+                return;
+            }
+
+            if (!description || description.length < 10) {
+                e.preventDefault();
+                alert('Please provide a detailed description (at least 10 characters)');
+                document.getElementById('description').focus();
+                return;
+            }
+        });
+
+        // Price input formatting
+        const priceInput = document.getElementById('price');
+        priceInput.addEventListener('blur', function() {
+            if (this.value) {
+                this.value = parseFloat(this.value).toFixed(2);
+            }
+        });
+
+        // Add hover effects
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Category selection enhancement
+        const categoryOptions = document.querySelectorAll('.category-option');
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.querySelector('.category-input');
+                input.checked = true;
+                
+                // Update visual state for all options
+                categoryOptions.forEach(opt => {
+                    opt.querySelector('.category-label').classList.remove('selected');
+                });
+                this.querySelector('.category-label').classList.add('selected');
+            });
+        });
+    });
+</script>
+{% endblock %}

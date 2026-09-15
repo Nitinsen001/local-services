@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Dashboard - Local Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-circle circle-1"></div>
+    <div class="bg-circle circle-2"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <span class="logo-text">ServicePro</span>
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <a href="{% url 'accounts:provider_dashboard' %}" class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span class="menu-text">Dashboard</span>
+            </a>
+            <a href="{% url 'services:service_list' %}?provider={{ user.id }}" class="menu-item">
+                <i class="fas fa-concierge-bell"></i>
+                <span class="menu-text">My Services</span>
+            </a>
+            <a href="{% url 'services:add_service' %}" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span class="menu-text">Add Service</span>
+            </a>
+            <a href="{% url 'bookings:provider_bookings' %}" class="menu-item">
+                <i class="fas fa-calendar-check"></i>
+                <span class="menu-text">Bookings</span>
+                {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
+            </a>
+            <a href="{% url 'services:availability' %}" class="menu-item">
+                <i class="fas fa-clock"></i>
+                <span class="menu-text">Availability</span>
+            </a>
+            <a href="{% url 'accounts:notifications' %}" class="menu-item">
+                <i class="fas fa-bell"></i>
+                <span class="menu-text">Notifications</span>
+            </a>
+            <a href="{% url 'accounts:profile' %}" class="menu-item">
+                <i class="fas fa-user"></i>
+                <span class="menu-text">Profile</span>
+            </a>
+            <a href="{% url 'accounts:logout' %}" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="menu-text">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Provider Dashboard</h1>
+            </div>
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="user-role">Premium Service Provider</div>
+                </div>
+                <div class="user-avatar">{{ user.first_name.0|default:user.username.0 }}</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Total Bookings</div>
+                    <div class="card-icon booking">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="card-value">{{ total_bookings }}</div>
+                <div class="card-change positive">
+                    <i class="fas fa-arrow-up"></i> 12% from last month
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Earnings</div>
+                    <div class="card-icon earning">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                </div>
+                <div class="card-value">₹{{ total_earnings|floatformat:0 }}</div>
+                <div class="card-change positive">
+                    <i class="fas fa-arrow-up"></i> 8% from last month
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Rating</div>
+                    <div class="card-icon rating">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="card-value">{{ user_rating|floatformat:1 }}/5</div>
+                <div class="card-change positive">
+                    <i class="fas fa-arrow-up"></i> 0.2 from last month
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Active Services</div>
+                    <div class="card-icon service">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                </div>
+                <div class="card-value">{{ active_services_count }}</div>
+                <div class="card-change negative">
+                    <i class="fas fa-arrow-down"></i> 2 from last month
+                </div>
+            </div>
+        </div>
+
+        <!-- My Services Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">My Services</h2>
+                <a href="{% url 'services:service_list' %}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <table class="services-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Bookings</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in recent_services %}
+                    <tr>
+                        <td>
+                            <div class="service-name">
+                                {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="service-image">
+                                {% else %}
+                                <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=100&h=100&fit=crop" alt="{{ service.name }}" class="service-image">
+                                {% endif %}
+                                <div>{{ service.name }}</div>
+                            </div>
+                        </td>
+                        <td>{{ service.category.name }}</td>
+                        <td>₹{{ service.price }}</td>
+                        <td>{{ service.booking_set.count }}</td>
+                        <td>
+                            {% if service.available %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-inactive">
+                                <i class="fas fa-times-circle"></i> Inactive
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="window.location.href='{% url 'services:service_detail' service.id %}'">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="window.location.href='{% url 'services:service_detail' service.id %}'">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 30px;">
+                            <p style="color: var(--text-light); margin-bottom: 15px;">No services found</p>
+                            <a href="{% url 'services:add_service' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Your First Service
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Bookings Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Bookings</h2>
+                <a href="{% url 'bookings:provider_bookings' %}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="{% url 'services:availability' %}" class="view-all">Availability</a>
+            </div>
+            <div class="booking-list">
+                {% for booking in recent_bookings %}
+                <div class="booking-item">
+                    <div class="booking-info">
+                        <div class="booking-avatar">{{ booking.user.first_name.0|default:booking.user.username.0 }}</div>
+                        <div class="booking-details">
+                            <h4>{{ booking.user.get_full_name|default:booking.user.username }}</h4>
+                            <p>{{ booking.service.name }}</p>
+                        </div>
+                    </div>
+                    <div class="booking-meta">
+                        <div class="booking-date">{{ booking.date|date:"M d, h:i A" }}</div>
+                        <div class="booking-status {% if booking.status == 'confirmed' %}status-active{% elif booking.status == 'pending' %}status-pending{% else %}status-inactive{% endif %}">
+                            {% if booking.status == 'confirmed' %}
+                            <i class="fas fa-check-circle"></i> Confirmed
+                            {% elif booking.status == 'pending' %}
+                            <i class="fas fa-clock"></i> Pending
+                            {% else %}
+                            <i class="fas fa-times-circle"></i> Cancelled
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="booking-item">
+                    <div class="booking-info">
+                        <div class="booking-details">
+                            <p style="color: var(--text-light);">No bookings yet. Bookings will appear here once customers book your services.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple JavaScript for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Menu item active state
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') === '#') {
+                        e.preventDefault();
+                    }
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Card hover effects
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Button hover effects
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

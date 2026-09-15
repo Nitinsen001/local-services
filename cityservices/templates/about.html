@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}How it works | Local Services Marketplace{% endblock %}
+{% block meta_description %}How Local Services Marketplace works: find a provider, book a slot, pay after the service and leave a review.{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="container">
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-circle-info" aria-hidden="true"></i> About the platform</span>
+                <h1>Local help, booked in a few taps</h1>
+                <p class="sub">Local Services Marketplace connects customers with nearby providers for everyday home and city services &mdash; plumbing, electrical, cleaning, painting, carpentry, gardening and more.</p>
+            </div>
+            <a class="btn btn-primary" href="{% url 'services:service_list' %}">
+                <i class="fas fa-compass" aria-hidden="true"></i> Browse services
+            </a>
+        </div>
+
+        <div class="grid-4">
+            <div class="stat-card">
+                <span class="stat-icon" aria-hidden="true"><i class="fas fa-list-check"></i></span>
+                <div class="stat-value">{{ total_services }}</div>
+                <div class="stat-label">Services listed</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon" aria-hidden="true"><i class="fas fa-user-check"></i></span>
+                <div class="stat-value">{{ total_providers }}</div>
+                <div class="stat-label">Service providers</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon" aria-hidden="true"><i class="fas fa-layer-group"></i></span>
+                <div class="stat-value">{{ total_categories }}</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon" aria-hidden="true"><i class="fas fa-star"></i></span>
+                <div class="stat-value">
+                    {% if average_rating %}{{ average_rating }}{% else %}&mdash;{% endif %}
+                </div>
+                <div class="stat-label">Average provider rating</div>
+            </div>
+        </div>
+
+        <section class="panel mt-lg">
+            <div class="panel-head">
+                <h2>How it works</h2>
+            </div>
+            <ul class="steps">
+                <li>
+                    <span class="step-num">1</span>
+                    <span>
+                        <strong>Search a service</strong>
+                        <span class="step-text">Filter by category, rating or area and compare prices side by side.</span>
+                    </span>
+                </li>
+                <li>
+                    <span class="step-num">2</span>
+                    <span>
+                        <strong>Book your slot</strong>
+                        <span class="step-text">Pick a date and time and add instructions for the provider.</span>
+                    </span>
+                </li>
+                <li>
+                    <span class="step-num">3</span>
+                    <span>
+                        <strong>Pay and review</strong>
+                        <span class="step-text">Pay after the work is completed, then rate your provider.</span>
+                    </span>
+                </li>
+            </ul>
+        </section>
+
+        <div class="grid-3 mt-lg">
+            <div class="panel">
+                <div class="panel-head"><h2>Who we are</h2></div>
+                <p class="sub">A two-sided marketplace where local professionals publish their services and customers book them with full transparency on price, area and reviews.</p>
+            </div>
+            <div class="panel">
+                <div class="panel-head"><h2>What you can do</h2></div>
+                <ul class="checklist">
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Browse and search services by category</li>
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Save favourites for later</li>
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Track bookings and payment status</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="panel-head"><h2>Why people trust us</h2></div>
+                <ul class="checklist">
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Ratings and reviews from real bookings</li>
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Notifications for every status change</li>
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Pay-after-service as the default flow</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel panel-accent mt-lg">
+            <h2>Are you a service professional?</h2>
+            <p>Publish your services, manage booking requests from one dashboard and build your reputation with customer reviews.</p>
+            <div class="panel-actions">
+                <a class="btn" href="{% url 'accounts:register' %}">
+                    <i class="fas fa-briefcase" aria-hidden="true"></i> Become a provider
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

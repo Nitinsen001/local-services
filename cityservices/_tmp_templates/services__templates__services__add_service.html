@@ -1,0 +1,785 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .add-service-section {
+        position: relative;
+        min-height: 100vh;
+        padding: 40px 20px 80px;
+        z-index: 2;
+    }
+
+    .add-service-container {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 3;
+    }
+
+    .add-service-header {
+        text-align: center;
+        margin-bottom: 50px;
+        animation: fadeInDown 0.8s ease;
+    }
+
+    .add-service-header h1 {
+        font-size: 3rem;
+        color: #0c4a6e;
+        margin-bottom: 15px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 10px rgba(14, 165, 233, 0.1);
+    }
+
+    .add-service-header .subtitle {
+        font-size: 1.2rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    /* Service Form Card */
+    .service-form-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(14, 165, 233, 0.15);
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .form-header h2 {
+        color: #0c4a6e;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    .service-form {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    /* Form Sections */
+    .form-section {
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(14, 165, 233, 0.2);
+        border-radius: 16px;
+        padding: 30px;
+        transition: all 0.3s ease;
+    }
+
+    .form-section:hover {
+        border-color: rgba(14, 165, 233, 0.4);
+        box-shadow: 0 8px 25px rgba(14, 165, 233, 0.1);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+
+    .section-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.3rem;
+        box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
+    }
+
+    .section-title {
+        color: #0c4a6e;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        color: #0c4a6e;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .required {
+        color: #ef4444;
+    }
+
+    .form-help {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-top: 4px;
+    }
+
+    /* Form Inputs */
+    .form-input,
+    .form-textarea,
+    .form-select {
+        padding: 15px 18px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(14, 165, 233, 0.2);
+        border-radius: 12px;
+        font-size: 1rem;
+        color: #1e293b;
+        outline: none;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.6;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Category Selection */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .category-option {
+        position: relative;
+    }
+
+    .category-input {
+        display: none;
+    }
+
+    .category-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 20px 15px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 2px solid rgba(14, 165, 233, 0.2);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .category-label:hover {
+        border-color: #0ea5e9;
+        transform: translateY(-2px);
+    }
+
+    .category-input:checked + .category-label {
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
+    }
+
+    .category-icon {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+
+    .category-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* Price Input */
+    .price-input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .price-prefix {
+        position: absolute;
+        left: 15px;
+        color: #64748b;
+        font-weight: 600;
+        z-index: 1;
+    }
+
+    .price-input {
+        padding-left: 40px;
+        width: 100%;
+    }
+
+    /* Image Upload */
+    .image-upload-area {
+        border: 2px dashed rgba(14, 165, 233, 0.3);
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .image-upload-area:hover {
+        border-color: #0ea5e9;
+        background: rgba(14, 165, 233, 0.05);
+    }
+
+    .image-upload-area.dragover {
+        border-color: #0ea5e9;
+        background: rgba(14, 165, 233, 0.1);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: #0ea5e9;
+        margin-bottom: 15px;
+    }
+
+    .upload-text {
+        color: #0c4a6e;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .upload-subtext {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .browse-btn {
+        background: rgba(14, 165, 233, 0.1);
+        color: #0ea5e9;
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .browse-btn:hover {
+        background: rgba(14, 165, 233, 0.2);
+    }
+
+    .image-preview {
+        display: none;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .preview-image {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 8px;
+        border: 2px solid rgba(14, 165, 233, 0.3);
+    }
+
+    /* Availability Toggle */
+    .toggle-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(14, 165, 233, 0.2);
+        border-radius: 12px;
+    }
+
+    .toggle-label {
+        flex: 1;
+        color: #0c4a6e;
+        font-weight: 600;
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 60px;
+        height: 30px;
+    }
+
+    .toggle-checkbox {
+        display: none;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #cbd5e1;
+        border-radius: 34px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .toggle-slider:before {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-checkbox:checked + .toggle-slider {
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+    }
+
+    .toggle-checkbox:checked + .toggle-slider:before {
+        transform: translateX(30px);
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        padding-top: 30px;
+        border-top: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    .btn {
+        flex: 1;
+        padding: 18px 30px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 5px 20px rgba(14, 165, 233, 0.2);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        color: white;
+        box-shadow: 0 5px 20px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        color: #0ea5e9;
+        border: 2px solid rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: #0ea5e9;
+        transform: translateY(-3px);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .add-service-header h1 {
+            font-size: 2.2rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .category-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .service-form-card {
+            padding: 30px 25px;
+        }
+
+        .form-section {
+            padding: 25px 20px;
+        }
+    }
+</style>
+
+<div class="add-service-section">
+    <div class="add-service-container">
+        <!-- Header -->
+        <div class="add-service-header">
+            <h1>Add New Service</h1>
+            <p class="subtitle">List your service and start getting bookings</p>
+        </div>
+
+        <!-- Service Form -->
+        <div class="service-form-card">
+            <div class="form-header">
+                <h2>Service Details</h2>
+                <p>Fill in the information about your service</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="service-form">
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3 class="section-title">Basic Information</h3>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-tag"></i>
+                                Service Name
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="e.g., Professional Home Cleaning" required>
+                            <div class="form-help">Choose a clear and descriptive name for your service</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category" class="form-label">
+                                <i class="fas fa-layer-group"></i>
+                                Category
+                                <span class="required">*</span>
+                            </label>
+                            <select id="category" name="category" class="form-select" required>
+                                <option value="">Select a category</option>
+                                <option value="cleaning">Cleaning</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="painting">Painting</option>
+                                <option value="carpentry">Carpentry</option>
+                                <option value="gardening">Gardening</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price" class="form-label">
+                                <i class="fas fa-rupee-sign"></i>
+                                Price
+                                <span class="required">*</span>
+                            </label>
+                            <div class="price-input-container">
+                                <span class="price-prefix">₹</span>
+                                <input type="number" id="price" name="price" class="form-input price-input" placeholder="0.00" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-help">Set your service price in Indian Rupees</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Service Location
+                            </label>
+                            <input type="text" id="location" name="location" class="form-input" placeholder="e.g., Mumbai, Maharashtra">
+                            <div class="form-help">City or area where you provide this service</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3 class="section-title">Service Description</h3>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left"></i>
+                            Description
+                            <span class="required">*</span>
+                        </label>
+                        <textarea id="description" name="description" class="form-textarea" placeholder="Describe your service in detail. What do you offer? What makes your service special?" required></textarea>
+                        <div class="form-help">Be detailed and highlight your expertise and what customers can expect</div>
+                    </div>
+                </div>
+
+                <!-- Service Image Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h3 class="section-title">Service Image</h3>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-image"></i>
+                            Upload Image
+                        </label>
+                        <div class="image-upload-area" id="image-upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="upload-text">Upload Service Image</div>
+                            <div class="upload-subtext">Drag & drop your image here or click to browse</div>
+                            <div class="browse-btn">Browse Files</div>
+                            <input type="file" id="image" name="image" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="image-preview" id="image-preview">
+                            <img src="" alt="Preview" class="preview-image">
+                            <div class="upload-subtext" style="margin-top: 10px;">Image Preview</div>
+                        </div>
+                        <div class="form-help">Recommended: 800x600px JPG or PNG (Max 5MB)</div>
+                    </div>
+                </div>
+
+                <!-- Availability Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="section-title">Availability</h3>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <div class="toggle-group">
+                            <div class="toggle-label">Make this service available for booking</div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="available" name="available" class="toggle-checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-help">Toggle off to temporarily hide your service from customers</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{% url 'services:service_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Service
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image upload functionality
+        const imageUploadArea = document.getElementById('image-upload-area');
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImage = imagePreview.querySelector('.preview-image');
+        const browseBtn = imageUploadArea.querySelector('.browse-btn');
+
+        // Click on upload area or browse button
+        imageUploadArea.addEventListener('click', function() {
+            imageInput.click();
+        });
+
+        browseBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            imageInput.click();
+        });
+
+        // Handle file selection
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        imageUploadArea.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please select a valid image file (JPG, PNG, etc.)');
+                }
+            }
+        });
+
+        // Drag and drop functionality
+        imageUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+
+        imageUploadArea.addEventListener('dragleave', function() {
+            imageUploadArea.classList.remove('dragover');
+        });
+
+        imageUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                imageInput.files = e.dataTransfer.files;
+                const event = new Event('change');
+                imageInput.dispatchEvent(event);
+            } else {
+                alert('Please drop a valid image file');
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('.service-form');
+        form.addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+            const category = document.getElementById('category').value;
+            const price = document.getElementById('price').value;
+            const description = document.getElementById('description').value.trim();
+
+            if (!name) {
+                e.preventDefault();
+                alert('Please enter a service name');
+                document.getElementById('name').focus();
+                return;
+            }
+
+            if (!category) {
+                e.preventDefault();
+                alert('Please select a category');
+                document.getElementById('category').focus();
+                return;
+            }
+
+            if (!price || parseFloat(price) <= 0) {
+                e.preventDefault();
+                alert('Please enter a valid price');
+                document.getElementById('price').focus();
+                return;
+            }
+
+            if (!description || description.length < 10) {
+                e.preventDefault();
+                alert('Please provide a detailed description (at least 10 characters)');
+                document.getElementById('description').focus();
+                return;
+            }
+        });
+
+        // Price input formatting
+        const priceInput = document.getElementById('price');
+        priceInput.addEventListener('blur', function() {
+            if (this.value) {
+                this.value = parseFloat(this.value).toFixed(2);
+            }
+        });
+
+        // Add hover effects
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Category selection enhancement
+        const categoryOptions = document.querySelectorAll('.category-option');
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.querySelector('.category-input');
+                input.checked = true;
+                
+                // Update visual state for all options
+                categoryOptions.forEach(opt => {
+                    opt.querySelector('.category-label').classList.remove('selected');
+                });
+                this.querySelector('.category-label').classList.add('selected');
+            });
+        });
+    });
+</script>
+{% endblock %}

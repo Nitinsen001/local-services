@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse services | Local Services Marketplace{% endblock %}
+{% block meta_description %}Search and filter local services by category, location and rating, then book a trusted provider.{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="container">
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-compass" aria-hidden="true"></i> Marketplace</span>
+                <h1>Our services</h1>
+                <p class="sub">
+                    {{ page_obj.paginator.count }} service{{ page_obj.paginator.count|pluralize }} available{% if query %} for &ldquo;{{ query }}&rdquo;{% endif %}
+                </p>
+            </div>
+            {% if user.profile.is_provider %}
+                <a class="btn btn-primary" href="{% url 'services:add_service' %}">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add a service
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="panel panel-plain">
+            <form class="search" method="get" action="{% url 'services:service_list' %}" role="search">
+                <i class="fas fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                <label class="sr-only" for="serviceSearch">Search services</label>
+                <input id="serviceSearch" type="search" name="q" value="{{ query }}"
+                       placeholder="Search by service, area or provider">
+                {% if selected_filter %}<input type="hidden" name="filter" value="{{ selected_filter }}">{% endif %}
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search" aria-hidden="true"></i> Search
+                </button>
+            </form>
+
+            <div class="chips mt-sm" aria-label="Category filters">
+                <a class="chip {% if not selected_category %}is-active{% endif %}"
+                   href="{% url 'services:service_list' %}{% if query %}?q={{ query|urlencode }}{% endif %}">All categories</a>
+                {% for category in categories %}
+                    <a class="chip {% if selected_category == category.name %}is-active{% endif %}"
+                       href="{% url 'services:service_list' %}?category={{ category.name|urlencode }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}">
+                        {{ category.name }}
+                        {% if category.service_count %}<span class="dash-count">{{ category.service_count }}</span>{% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="chips mt-sm" aria-label="Sorting">
+                <span class="chips-label">Sort:</span>
+                <a class="chip {% if not selected_filter %}is-active{% endif %}"
+                   href="{% url 'services:service_list' %}?{% if query %}q={{ query|urlencode }}{% endif %}">Newest</a>
+                <a class="chip {% if selected_filter == 'top_rated' %}is-active{% endif %}"
+                   href="{% url 'services:service_list' %}?filter=top_rated{% if query %}&amp;q={{ query|urlencode }}{% endif %}">Top rated</a>
+                <a class="chip {% if selected_filter == 'near_me' %}is-active{% endif %}"
+                   href="{% url 'services:service_list' %}?filter=near_me{% if query %}&amp;q={{ query|urlencode }}{% endif %}">Near me</a>
+            </div>
+        </div>
+
+        {% if services %}
+            <div class="services-grid mt-md">
+                {% for service in services %}
+                    <article class="service-card">
+                        <div class="service-media">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                            {% else %}
+                                <div class="service-thumb" aria-hidden="true">
+                                    <i class="{{ service.category.icon_class }}"></i>
+                                </div>
+                            {% endif %}
+                            <span class="service-badge">{{ service.category.name }}</span>
+                        </div>
+                        <div class="service-body">
+                            <h2 class="service-name">
+                                <a href="{% url 'services:service_detail' service.id %}">{{ service.name }}</a>
+                            </h2>
+                            <p class="service-desc">{{ service.description|truncatechars:110 }}</p>
+                            <div class="service-meta">
+                                <span>
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                    {{ service.provider.get_full_name|default:service.provider.username }}
+                                </span>
+                                {% if service.location %}
+                                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> {{ service.location }}</span>
+                                {% endif %}
+                                {% if service.review_count %}
+                                    <span>
+                                        <i class="fas fa-star" aria-hidden="true"></i>
+                                        {{ service.average_rating|floatformat:1 }} ({{ service.review_count }})
+                                    </span>
+                                {% else %}
+                                    <span class="is-new">
+                                        <i class="fas fa-circle-info" aria-hidden="true"></i> New listing
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="service-foot">
+                            <span class="price">&#8377;{{ service.price|floatformat:0 }}<small>/service</small></span>
+                            <a class="btn btn-sm btn-primary" href="{% url 'services:service_detail' service.id %}">
+                                View details <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <a class="card-link" href="{% url 'services:service_detail' service.id %}"
+                           aria-label="View details for {{ service.name }}"></a>
+                    </article>
+                {% endfor %}
+            </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav class="pagination" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if selected_category %}&amp;category={{ selected_category|urlencode }}{% endif %}{% if selected_filter %}&amp;filter={{ selected_filter }}{% endif %}" aria-label="Previous page">
+                            <i class="fas fa-angle-left" aria-hidden="true"></i> Previous
+                        </a>
+                    {% endif %}
+
+                    <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}{% if selected_category %}&amp;category={{ selected_category|urlencode }}{% endif %}{% if selected_filter %}&amp;filter={{ selected_filter }}{% endif %}" aria-label="Next page">
+                            Next <i class="fas fa-angle-right" aria-hidden="true"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="empty mt-md">
+                <i class="fas fa-box-open" aria-hidden="true"></i>
+                <h3>No services matched your search</h3>
+                <p>Try a different keyword, or clear the filters to see everything that is available.</p>
+                <div class="btn-row center-actions">
+                    <a class="btn btn-primary" href="{% url 'services:service_list' %}">Clear filters</a>
+                    {% if user.profile.is_provider %}
+                        <a class="btn btn-outline" href="{% url 'services:add_service' %}">Add a service</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

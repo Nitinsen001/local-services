@@ -1,0 +1,743 @@
+/*
+ * CSS for Local Services Marketplace UI
+ * Designed to match the provided image (Gemini_Generated_Image_...)
+ */
+
+/* General Reset and Base Styles */
+:root {
+    --primary-color: #6366f1; /* Indigo */
+    --secondary-color: #e0e7ff; /* Light Indigo for background/hover */
+    --text-color: #1f2937; /* Dark Gray */
+    --light-text-color: #6b7280; /* Medium Gray */
+    --white: #ffffff;
+    --gray-bg: #f9fafb;
+    --border-color: #e5e7eb;
+    --radius-large: 1.5rem;
+    --radius-medium: 0.75rem;
+    --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Arial', sans-serif; /* Using a common font that looks clean */
+    background-color: var(--gray-bg);
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal scroll from circles */
+}
+
+/* Background Decorations (Matching the image's abstract shapes) */
+.bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px); /* Soft blur effect */
+    opacity: 0.8;
+    z-index: -1;
+}
+
+.circle-1 {
+    width: 150px;
+    height: 150px;
+    background-color: #fca5a5; /* Pinkish-orange */
+    top: 50px;
+    left: 50px;
+}
+
+.circle-2 {
+    width: 100px;
+    height: 100px;
+    background-color: #34d399; /* Greenish */
+    bottom: 50px;
+    right: 50px;
+}
+
+.circle-3 {
+    width: 200px;
+    height: 200px;
+    background-color: #93c5fd; /* Light Blue */
+    top: -50px;
+    right: -50px;
+    opacity: 0.5;
+}
+
+/* Container */
+.container {
+    max-width: 1400px; /* Wider container to match the image composition */
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background: var(--white);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-light);
+    margin-bottom: 30px;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-tab {
+    text-decoration: none;
+    color: var(--light-text-color);
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: var(--radius-medium);
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.nav-tab.active,
+.nav-links a:hover {
+    color: var(--primary-color);
+    /* background-color: var(--secondary-color); /* Uncomment for hover effect */
+}
+
+/* The image has the "Become a Provider" and "Login/Signup" as buttons/primary links */
+.nav-links a[href*="add_service"],
+.nav-links a[href*="login"],
+.nav-links a[href*="register"] {
+    padding: 8px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    color: var(--text-color);
+}
+
+.nav-links a[href*="login"] {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification {
+    position: relative;
+    font-size: 1.2rem;
+    color: var(--light-text-color);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.notification:hover {
+    color: var(--primary-color);
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444; /* Red dot */
+    border-radius: 50%;
+}
+
+/* Main Content Layout */
+.main-content {
+    display: flex;
+    gap: 30px;
+    padding: 0 10px;
+}
+
+.left-panel {
+    flex: 3; /* Matches the left column width */
+    min-width: 0;
+    padding: 30px;
+    background: var(--white);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-lg);
+}
+
+.right-panel {
+    flex: 2; /* Matches the right column width */
+    padding: 30px;
+    background: var(--white);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Utility/Section Styles */
+.section {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-title h2, .section-title h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.section-title .view-all {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Search Section */
+.search-section {
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+.search-box {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-right: none;
+    border-top-left-radius: var(--radius-medium);
+    border-bottom-left-radius: var(--radius-medium);
+    font-size: 1rem;
+}
+
+.search-btn {
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-top-right-radius: var(--radius-medium);
+    border-bottom-right-radius: var(--radius-medium);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.search-btn:hover {
+    background-color: #4f46e5;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-tabs .nav-tab {
+    padding: 8px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    background-color: var(--gray-bg);
+}
+
+.nav-tabs .nav-tab.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+/* Featured Services Grid (Service Cards) - Top Row */
+.featured-services .section-title {
+    margin-bottom: 20px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for the image layout */
+    gap: 20px;
+}
+
+.service-card {
+    background: var(--white);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+}
+
+.service-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.service-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
+.service-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ef4444; /* Red badge for 'Featured' or 'New' */
+    color: var(--white);
+    padding: 4px 8px;
+    border-radius: var(--radius-medium);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.service-info {
+    padding: 10px;
+}
+
+.service-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+}
+
+.service-area {
+    font-size: 0.8rem;
+    color: var(--light-text-color);
+    margin-bottom: 10px;
+}
+
+.service-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px 10px;
+    font-size: 0.9rem;
+    color: #f59e0b; /* Amber color for stars */
+    font-weight: 600;
+}
+
+.service-rating i {
+    color: #f59e0b;
+    font-size: 0.8rem;
+}
+
+/* Service Categories (Icons under the search/featured) */
+.service-categories {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 columns of icons */
+    gap: 15px;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.category-item {
+    padding: 15px 10px;
+    border-radius: var(--radius-medium);
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.category-item:hover {
+    background-color: var(--secondary-color);
+}
+
+.category-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.category-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* Search Results / Provider List (Bottom Left) */
+.search-results {
+    margin-top: 30px;
+}
+
+.provider-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.provider-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    background-color: var(--white);
+    transition: background-color 0.2s, border-color 0.2s;
+    cursor: pointer;
+}
+
+.provider-card:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+}
+
+.provider-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+}
+
+.provider-info {
+    flex-grow: 1;
+}
+
+.provider-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.provider-service {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+}
+
+.provider-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.price-tag {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.book-btn {
+    padding: 8px 15px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-medium);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.book-btn:hover {
+    background-color: #4f46e5;
+}
+
+/* Right Panel: Provider Profile View */
+
+.right-panel h4 {
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-header .profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 4px solid var(--secondary-color);
+    box-shadow: var(--shadow-light);
+}
+
+.profile-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.profile-title {
+    font-size: 0.95rem;
+    color: var(--light-text-color);
+    margin-bottom: 10px;
+}
+
+.profile-rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    color: #f59e0b; /* Amber for stars */
+    font-size: 1rem;
+}
+
+.profile-rating span {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* Portfolio */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.portfolio-item img {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--radius-medium);
+}
+
+/* Booking Calendar */
+.calendar {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.calendar-header button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 5px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    gap: 5px;
+}
+
+.calendar-day {
+    padding: 8px 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--light-text-color);
+    cursor: default;
+}
+
+.calendar-grid > .calendar-day:nth-child(-n+7) {
+    /* Day names */
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.calendar-day.available {
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.calendar-day.available:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Override for selected day from JS - keep in sync with JS */
+.calendar-day[style*="background: rgb(99, 102, 241)"] {
+    background-color: var(--primary-color) !important;
+    color: var(--white) !important;
+}
+
+/* Contact/Booking Button (at the bottom of right panel) */
+.booking-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-medium);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+
+.booking-btn:hover {
+    background-color: #4f46e5;
+}
+
+
+/* Footer Styles (Clean and simple) */
+.footer {
+    margin-top: 50px;
+    padding: 40px 0 20px;
+    background-color: var(--white);
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-column h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column li {
+    margin-bottom: 8px;
+}
+
+.footer-column a {
+    text-decoration: none;
+    color: var(--light-text-color);
+    font-size: 0.9rem;
+}
+
+.footer-column a:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-bottom p {
+    font-size: 0.8rem;
+    color: var(--light-text-color);
+}
+
+
+/* Responsive Adjustments (Basic) */
+@media (max-width: 1200px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .main-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .left-panel, .right-panel {
+        padding: 20px;
+    }
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .service-categories {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .footer-content {
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+    .footer-column {
+        min-width: 40%;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+        gap: 15px;
+    }
+    .nav-links {
+        justify-content: center;
+        width: 100%;
+    }
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .services-grid, .service-categories {
+        grid-template-columns: 1fr;
+    }
+    .search-box {
+        flex-direction: column;
+    }
+    .search-input, .search-btn {
+        border-radius: var(--radius-medium);
+        border-right: 1px solid var(--border-color); /* Fix border for mobile */
+    }
+    .search-btn {
+        margin-top: 10px;
+    }
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .footer-column {
+        min-width: 100%;
+        margin-bottom: 20px;
+    }
+}

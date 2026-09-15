@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Local Services Marketplace{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Find and book trusted local service providers for plumbing, electrical, cleaning, painting and more.{% endblock %}">
+    <meta name="theme-color" content="#0ea5e9">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="bg-orb orb-1" aria-hidden="true"></div>
+    <div class="bg-orb orb-2" aria-hidden="true"></div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'home' %}">
+                <span class="brand-icon" aria-hidden="true"><i class="fas fa-screwdriver-wrench"></i></span>
+                <span>Local Services<small>Marketplace</small></span>
+            </a>
+
+            <nav class="main-nav" aria-label="Primary">
+                <a href="{% url 'services:service_list' %}"
+                   class="{% if request.resolver_match.view_name == 'services:service_list' %}is-active{% endif %}">
+                    <i class="fas fa-compass" aria-hidden="true"></i> Browse services
+                </a>
+                <a href="{% url 'about' %}"
+                   class="{% if request.resolver_match.url_name == 'about' %}is-active{% endif %}">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i> How it works
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% if user.profile.is_provider %}{% url 'accounts:provider_dashboard' %}{% else %}{% url 'accounts:user_dashboard' %}{% endif %}"
+                       class="{% if request.resolver_match.url_name == 'provider_dashboard' or request.resolver_match.url_name == 'user_dashboard' %}is-active{% endif %}">
+                        <i class="fas fa-gauge-high" aria-hidden="true"></i> Dashboard
+                    </a>
+                    <a href="{% url 'bookings:my_bookings' %}"
+                       class="{% if request.resolver_match.url_name == 'my_bookings' %}is-active{% endif %}">
+                        <i class="fas fa-calendar-check" aria-hidden="true"></i> My bookings
+                    </a>
+                    <a href="{% url 'services:favorite_list' %}"
+                       class="{% if request.resolver_match.url_name == 'favorite_list' %}is-active{% endif %}">
+                        <i class="fas fa-heart" aria-hidden="true"></i> Favourites
+                    </a>
+                    {% if user.profile.is_provider %}
+                        <a href="{% url 'services:add_service' %}"
+                           class="{% if request.resolver_match.url_name == 'add_service' %}is-active{% endif %}">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add service
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </nav>
+
+            <div class="header-actions">
+                <a class="icon-btn"
+                   href="{% if user.is_authenticated %}{% url 'accounts:notifications' %}{% else %}{% url 'accounts:login' %}{% endif %}"
+                   aria-label="Notifications">
+                    <i class="fas fa-bell" aria-hidden="true"></i>
+                    {% if unread_notification_count %}<span class="dot">{{ unread_notification_count }}</span>{% endif %}
+                </a>
+                {% if user.is_authenticated %}
+                    <a class="btn btn-ghost" href="{% url 'accounts:profile' %}">
+                        <i class="fas fa-user" aria-hidden="true"></i> {{ user.get_short_name|default:user.username }}
+                    </a>
+                    <a class="btn btn-primary" href="{% url 'accounts:logout' %}">
+                        <i class="fas fa-arrow-right-from-bracket" aria-hidden="true"></i> Logout
+                    </a>
+                {% else %}
+                    <a class="btn btn-ghost" href="{% url 'accounts:login' %}">Login</a>
+                    <a class="btn btn-primary" href="{% url 'accounts:register' %}">Get started</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="container">
+            <div class="messages-wrap">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}" role="status">
+                        <i class="fas fa-circle-info" aria-hidden="true"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <main id="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Local Services</h3>
+                    <ul>
+                        <li><a href="{% url 'about' %}">About us</a></li>
+                        <li><a href="{% url 'about' %}">How it works</a></li>
+                        <li><a href="{% url 'contact' %}">Contact us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>For customers</h3>
+                    <ul>
+                        <li><a href="{% url 'services:service_list' %}">Browse services</a></li>
+                        <li><a href="{% url 'bookings:my_bookings' %}">My bookings</a></li>
+                        <li><a href="{% url 'services:favorite_list' %}">My favourites</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>For providers</h3>
+                    <ul>
+                        <li><a href="{% url 'accounts:register' %}">Become a provider</a></li>
+                        <li><a href="{% url 'services:add_service' %}">Add a service</a></li>
+                        <li><a href="{% url 'services:availability' %}">Manage availability</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="{% url 'contact' %}">Help centre</a></li>
+                        <li><a href="{% url 'accounts:notifications' %}">Notifications</a></li>
+                        <li><a href="{% url 'accounts:profile' %}">My profile</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} Local Services Marketplace. All rights reserved.</p>
+                <div class="socials" aria-label="Social links">
+                    <a href="{% url 'contact' %}" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                    <a href="{% url 'contact' %}" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                    <a href="{% url 'contact' %}" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                    <a href="{% url 'contact' %}" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

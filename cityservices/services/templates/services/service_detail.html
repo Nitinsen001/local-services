@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }} | Local Services Marketplace{% endblock %}
+{% block meta_description %}{{ service.description|truncatechars:150 }}{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="container">
+        <a class="back-link" href="{% url 'services:service_list' %}">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to services
+        </a>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="{{ service.category.icon_class }}" aria-hidden="true"></i> {{ service.category.name }}</span>
+                <h1>{{ service.name }}</h1>
+                <p class="sub">{{ service.description|truncatechars:180 }}</p>
+            </div>
+        </div>
+
+        <div class="split">
+            <!-- Service information -->
+            <div class="panel">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" alt="{{ service.name }}" class="detail-img">
+                {% else %}
+                    <div class="hero-thumb" aria-hidden="true">
+                        <i class="{{ service.category.icon_class }}"></i>
+                    </div>
+                {% endif %}
+
+                <div class="panel-head mt-sm">
+                    <h2>About this service</h2>
+                </div>
+                <p class="review-body">{{ service.description }}</p>
+
+                <div class="detail-rows">
+                    <div class="detail-row">
+                        <span class="label"><i class="fas fa-user" aria-hidden="true"></i> Provider</span>
+                        <span class="value">{{ service.provider.get_full_name|default:service.provider.username }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label"><i class="fas fa-location-dot" aria-hidden="true"></i> Location</span>
+                        <span class="value">{{ service.location|default:"Flexible" }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label"><i class="fas fa-star" aria-hidden="true"></i> Rating</span>
+                        <span class="value">
+                            {% if service.review_count %}
+                                {{ service.average_rating|floatformat:1 }} <i class="fas fa-star" aria-hidden="true"></i>
+                                ({{ service.review_count }} review{{ service.review_count|pluralize }})
+                            {% else %}
+                                New listing
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label"><i class="fas fa-shield-halved" aria-hidden="true"></i> Payment</span>
+                        <span class="value">Pay after service</span>
+                    </div>
+                </div>
+
+                <ul class="checklist mt-md">
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Your request goes straight to the provider</li>
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Notifications on every status change</li>
+                    <li><i class="fas fa-circle-check" aria-hidden="true"></i> Review the work once it is completed</li>
+                </ul>
+            </div>
+
+            <div class="panel">
+                <div class="price-hero">
+                    <span class="label">Service price</span>
+                    <span class="amount">&#8377;{{ service.price|floatformat:0 }}</span>
+                </div>
+
+                <div class="btn-row mt-md">
+                    <a class="btn btn-primary" href="{% url 'bookings:book_service' service.id %}">
+                        <i class="fas fa-calendar-check" aria-hidden="true"></i> Book this service
+                    </a>
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'services:toggle_favorite' service.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline">
+                                <i class="fas fa-heart" aria-hidden="true"></i> Save to favourites
+                            </button>
+                        </form>
+                    {% endif %}
+                    <a class="btn btn-ghost" href="{% url 'contact' %}">
+                        <i class="fas fa-comments" aria-hidden="true"></i> Ask a question
+                    </a>
+                </div>
+
+                <div class="panel-head mt-md">
+                    <h2>Your provider</h2>
+                </div>
+                <div class="provider-card">
+                    <div class="avatar">
+                        {% if service.provider.profile.avatar %}
+                            <img src="{{ service.provider.profile.avatar.url }}" alt="{{ service.provider.username }}">
+                        {% else %}
+                            <span class="avatar-initials" aria-hidden="true">{{ service.provider.get_full_name|default:service.provider.username|slice:":1" }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="provider-info">
+                        <h3 class="provider-name">{{ service.provider.get_full_name|default:service.provider.username }}</h3>
+                        <div class="provider-rating">
+                            {% if service.provider.profile.review_count %}
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                <span class="score">{{ service.provider.profile.rating|floatformat:1 }}</span>
+                                <span>({{ service.provider.profile.review_count }} review{{ service.provider.profile.review_count|pluralize }})</span>
+                            {% else %}
+                                <span>New provider</span>
+                            {% endif %}
+                            {% if service.provider.profile.service_area %}
+                                <span class="sep" aria-hidden="true">&bull;</span>
+                                <span>{{ service.provider.profile.service_area }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="provider-actions">
+                        <a class="btn btn-sm btn-outline" href="{% url 'reviews:provider_reviews' service.provider.id %}">Reviews</a>
+                        <a class="btn btn-sm btn-ghost" href="{% url 'services:service_list' %}?provider={{ service.provider.id }}">All services</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+        <!-- ANCHOR-DETAIL-REVIEWS -->

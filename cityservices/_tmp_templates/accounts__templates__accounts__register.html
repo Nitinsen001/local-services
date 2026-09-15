@@ -1,0 +1,716 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+   <div class="auth-card">
+       <div class="auth-header">
+           <div class="auth-icon">
+               <i class="fas fa-user-plus"></i>
+           </div>
+           <h1>Create Account</h1>
+           <p>Join our local services marketplace</p>
+       </div>
+
+       <form method="post" class="auth-form" id="registrationForm">
+           {% csrf_token %}
+
+           <div class="form-group">
+               <div class="input-container">
+                   <i class="fas fa-user input-icon"></i>
+                   {{ form.username }}
+                   <label for="{{ form.username.id_for_label }}">Username</label>
+               </div>
+           </div>
+
+           <div class="form-group">
+               <div class="input-container">
+                   <i class="fas fa-envelope input-icon"></i>
+                   {{ form.email }}
+                   <label for="{{ form.email.id_for_label }}">Email</label>
+               </div>
+           </div>
+
+           <!-- Account Type Selection -->
+           <div class="form-group">
+               <div class="account-type-container">
+                   <label class="account-type-label">I want to:</label>
+                   <div class="account-type-options">
+                       {% for radio in form.user_type %}
+                       <div class="account-type-option">
+                           {{ radio.tag }}
+                           <label for="{{ radio.id_for_label }}" class="account-type-label-custom">
+                               <div class="option-content">
+                                   <div class="option-icon">
+                                       <i class="fas {% if radio.choice_value == 'provider' %}fa-tools{% else %}fa-user{% endif %}"></i>
+                                   </div>
+                                   <div class="option-text">
+                                       <div class="option-title">{{ radio.choice_label }}</div>
+                                       <div class="option-description">
+                                           {% if radio.choice_value == 'provider' %}
+                                               Offer services like plumbing, cleaning, electrical work, etc.
+                                           {% else %}
+                                               Book services from local providers in my area
+                                           {% endif %}
+                                       </div>
+                                   </div>
+                               </div>
+                           </label>
+                       </div>
+                       {% endfor %}
+                   </div>
+               </div>
+           </div>
+
+           <!-- Provider Additional Fields (Hidden by default) -->
+           <div id="providerFields" class="provider-fields" style="display: none;">
+               <div class="provider-section-header">
+                   <h3><i class="fas fa-tools"></i> Service Provider Details</h3>
+                   <p>Please provide additional information about your services</p>
+               </div>
+               
+               <div class="form-group">
+                   <div class="input-container">
+                       <i class="fas fa-briefcase input-icon"></i>
+                       <select name="service_category" class="form-control">
+                           <option value="">Select Service Category</option>
+                           <option value="plumbing">Plumbing</option>
+                           <option value="electrical">Electrical</option>
+                           <option value="cleaning">Cleaning</option>
+                           <option value="painting">Painting</option>
+                           <option value="carpentry">Carpentry</option>
+                           <option value="gardening">Gardening</option>
+                           <option value="beauty">Beauty & Wellness</option>
+                           <option value="other">Other</option>
+                       </select>
+                       <label>Service Category</label>
+                   </div>
+               </div>
+
+               <div class="form-group">
+                   <div class="input-container">
+                       <i class="fas fa-rupee-sign input-icon"></i>
+                       <input type="number" name="hourly_rate" min="0" step="50" class="form-control" placeholder=" ">
+                       <label for="hourly_rate">Hourly Rate (₹)</label>
+                   </div>
+               </div>
+
+               <div class="form-group">
+                   <div class="input-container">
+                       <i class="fas fa-map-marker-alt input-icon"></i>
+                       <input type="text" name="service_area" class="form-control" placeholder=" ">
+                       <label for="service_area">Service Area (City/Locality)</label>
+                   </div>
+               </div>
+
+               <div class="form-group">
+                   <div class="input-container">
+                       <i class="fas fa-file-alt input-icon"></i>
+                       <textarea name="service_description" class="form-control" rows="3" placeholder=" "></textarea>
+                       <label for="service_description">Service Description</label>
+                   </div>
+               </div>
+
+               <div class="form-group">
+                   <div class="input-container">
+                       <i class="fas fa-clock input-icon"></i>
+                       <input type="text" name="experience" class="form-control" placeholder=" ">
+                       <label for="experience">Years of Experience</label>
+                   </div>
+               </div>
+           </div>
+
+           <div class="form-group">
+               <div class="input-container">
+                   <i class="fas fa-lock input-icon"></i>
+                   {{ form.password1 }}
+                   <label for="{{ form.password1.id_for_label }}">Password</label>
+                   <i class="fas fa-eye toggle-password" onclick="togglePassword(this)"></i>
+               </div>
+               {% if form.password1.help_text %}<small class="form-help">{{ form.password1.help_text }}</small>{% endif %}
+               {% for error in form.password1.errors %}<div class="error-item"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>{% endfor %}
+           </div>
+
+           <div class="form-group">
+               <div class="input-container">
+                   <i class="fas fa-lock input-icon"></i>
+                   {{ form.password2 }}
+                   <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                   <i class="fas fa-eye toggle-password" onclick="togglePassword(this)"></i>
+               </div>
+               {% if form.password2.help_text %}<small class="form-help">{{ form.password2.help_text }}</small>{% endif %}
+               {% for error in form.password2.errors %}<div class="error-item"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>{% endfor %}
+           </div>
+
+           {% if form.errors %}
+           <div class="error-messages">
+               {% for field in form %}
+                   {% for error in field.errors %}
+                       <div class="error-item">
+                           <i class="fas fa-exclamation-circle"></i>
+                           {{ error }}
+                       </div>
+                   {% endfor %}
+               {% endfor %}
+               {% for error in form.non_field_errors %}
+                   <div class="error-item">
+                       <i class="fas fa-exclamation-circle"></i>
+                       {{ error }}
+                   </div>
+               {% endfor %}
+           </div>
+           {% endif %}
+
+           <button type="submit" class="auth-btn primary">
+               <i class="fas fa-user-plus"></i>
+               Create Account
+           </button>
+       </form>
+
+       <div class="auth-footer">
+           <p>Already have an account?
+               <a href="{% url  'accounts:login' %}" class="auth-link">Sign In</a>
+           </p>
+       </div>
+   </div>
+</div>
+
+<style>
+.auth-container {
+   min-height: calc(100vh - 140px);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 40px 20px;
+   position: relative;
+   z-index: 1;
+}
+
+.auth-card {
+   background: rgba(255, 255, 255, 0.95);
+   backdrop-filter: blur(20px);
+   border-radius: 24px;
+   padding: 40px;
+   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+   width: 100%;
+   max-width: 480px;
+   border: 1px solid rgba(255, 255, 255, 0.2);
+   animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+   from {
+       opacity: 0;
+       transform: translateY(40px);
+   }
+   to {
+       opacity: 1;
+       transform: translateY(0);
+   }
+}
+
+.auth-header {
+   text-align: center;
+   margin-bottom: 40px;
+}
+
+.auth-icon {
+   width: 80px;
+   height: 80px;
+   background: linear-gradient(135deg, #6366f1, #8b5cf6);
+   border-radius: 20px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   margin: 0 auto 20px;
+   font-size: 32px;
+   color: white;
+   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.auth-header h1 {
+   font-size: 28px;
+   font-weight: 700;
+   color: #1f2937;
+   margin-bottom: 8px;
+}
+
+.auth-header p {
+   color: #6b7280;
+   font-size: 16px;
+}
+
+.auth-form {
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Account Type Selection Styles */
+.account-type-container {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.account-type-container:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.account-type-label {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 16px;
+    font-size: 16px;
+}
+
+.account-type-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.account-type-option {
+    position: relative;
+}
+
+.account-type-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.account-type-label-custom {
+    display: block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: white;
+    border: 2px solid #f3f4f6;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.account-type-option input[type="radio"]:checked + .account-type-label-custom .option-content {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.account-type-option input[type="radio"]:checked + .account-type-label-custom .option-icon {
+    background: #6366f1;
+    color: white;
+}
+
+.option-icon {
+    width: 50px;
+    height: 50px;
+    background: #f3f4f6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.option-text {
+    flex: 1;
+}
+
+.option-title {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+.option-description {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.input-container input, 
+.input-container select, 
+.input-container textarea {
+   width: 100%;
+   padding: 16px 20px 16px 50px;
+   border: 2px solid #e5e7eb;
+   border-radius: 12px;
+   font-size: 16px;
+   background: rgba(255, 255, 255, 0.8);
+   transition: all 0.3s ease;
+   outline: none;
+   color: #1f2937;
+   font-family: inherit;
+}
+
+.input-container textarea {
+   resize: vertical;
+   min-height: 100px;
+}
+
+.input-container input:focus,
+.input-container select:focus,
+.input-container textarea:focus {
+   border-color: #6366f1;
+   background: white;
+   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.input-container label {
+   position: absolute;
+   left: 50px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: #9ca3af;
+   pointer-events: none;
+   transition: all 0.3s ease;
+   background: transparent;
+   padding: 0 8px;
+}
+
+.input-container textarea + label {
+   top: 25px;
+   transform: none;
+}
+
+.input-container input:focus + label,
+.input-container input:not(:placeholder-shown) + label,
+.input-container select:focus + label,
+.input-container select:not(:placeholder-shown) + label,
+.input-container textarea:focus + label,
+.input-container textarea:not(:placeholder-shown) + label {
+   top: 0;
+   left: 16px;
+   font-size: 12px;
+   color: #6366f1;
+   background: white;
+   transform: translateY(-50%);
+}
+
+.input-icon {
+   position: absolute;
+   left: 16px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: #9ca3af;
+   font-size: 18px;
+   z-index: 2;
+   transition: color 0.3s ease;
+}
+
+.input-container textarea ~ .input-icon {
+   top: 25px;
+   transform: none;
+}
+
+.input-container input:focus ~ .input-icon,
+.input-container select:focus ~ .input-icon,
+.input-container textarea:focus ~ .input-icon {
+   color: #6366f1;
+}
+
+.toggle-password {
+   position: absolute;
+   right: 16px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: #9ca3af;
+   cursor: pointer;
+   font-size: 16px;
+   transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+   color: #6366f1;
+}
+
+/* Provider Fields Styles */
+.provider-fields {
+   background: rgba(99, 102, 241, 0.05);
+   border: 2px solid rgba(99, 102, 241, 0.2);
+   border-radius: 16px;
+   padding: 20px;
+   margin-top: 10px;
+   transition: all 0.5s ease;
+   overflow: hidden;
+}
+
+.provider-section-header {
+   text-align: center;
+   margin-bottom: 20px;
+}
+
+.provider-section-header h3 {
+   color: #6366f1;
+   font-size: 18px;
+   margin-bottom: 8px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 10px;
+}
+
+.provider-section-header p {
+   color: #6b7280;
+   font-size: 14px;
+}
+
+.error-messages {
+   background: #fef2f2;
+   border: 1px solid #fecaca;
+   border-radius: 12px;
+   padding: 16px;
+   margin-bottom: 8px;
+}
+
+.error-item {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   color: #dc2626;
+   font-size: 14px;
+   margin-bottom: 8px;
+}
+
+.error-item:last-child {
+   margin-bottom: 0;
+}
+
+.error-item i {
+   font-size: 16px;
+}
+
+.auth-btn {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 12px;
+   padding: 16px 24px;
+   border: none;
+   border-radius: 12px;
+   font-size: 16px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   text-decoration: none;
+   margin-top: 8px;
+}
+
+.auth-btn.primary {
+   background: linear-gradient(135deg, #6366f1, #8b5cf6);
+   color: white;
+   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.auth-btn.primary:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.auth-footer {
+   text-align: center;
+   margin-top: 32px;
+   padding-top: 24px;
+   border-top: 1px solid #e5e7eb;
+}
+
+.auth-footer p {
+   color: #6b7280;
+   margin: 0;
+}
+
+.auth-link {
+   color: #6366f1;
+   text-decoration: none;
+   font-weight: 600;
+   transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+   color: #5b5bd6;
+}
+
+@media (max-width: 640px) {
+    .auth-container {
+        padding: 20px 16px;
+    }
+
+    .auth-card {
+        padding: 32px 24px;
+    }
+
+    .auth-header h1 {
+        font-size: 24px;
+    }
+
+    .auth-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 24px;
+    }
+
+    .account-type-container {
+        padding: 16px;
+    }
+
+    .option-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 20px 16px;
+    }
+
+    .option-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .option-title {
+        font-size: 15px;
+    }
+
+    .option-description {
+        font-size: 13px;
+    }
+
+    .provider-fields {
+        padding: 16px;
+    }
+}
+</style>
+
+<script>
+function togglePassword(icon) {
+   const input = icon.parentElement.querySelector('input');
+   if (input.type === 'password') {
+       input.type = 'text';
+       icon.classList.remove('fa-eye');
+       icon.classList.add('fa-eye-slash');
+   } else {
+       input.type = 'password';
+       icon.classList.remove('fa-eye-slash');
+       icon.classList.add('fa-eye');
+   }
+}
+
+// Add focus/blur effects for better UX
+document.querySelectorAll('.input-container input, .input-container select, .input-container textarea').forEach(input => {
+   input.addEventListener('focus', function() {
+       this.parentElement.style.transform = 'scale(1.02)';
+       this.parentElement.style.transition = 'transform 0.2s ease';
+   });
+
+   input.addEventListener('blur', function() {
+       this.parentElement.style.transform = 'scale(1)';
+   });
+});
+
+// Show/hide provider fields based on user type selection
+document.addEventListener('DOMContentLoaded', function() {
+    const providerFields = document.getElementById('providerFields');
+    const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+    
+    userTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'provider') {
+                // Show provider fields with animation
+                providerFields.style.display = 'block';
+                setTimeout(() => {
+                    providerFields.style.opacity = '1';
+                    providerFields.style.transform = 'translateY(0)';
+                }, 10);
+                
+                // Make provider fields required
+                const providerInputs = providerFields.querySelectorAll('input, select, textarea');
+                providerInputs.forEach(input => {
+                    input.required = true;
+                });
+            } else {
+                // Hide provider fields with animation
+                providerFields.style.opacity = '0';
+                providerFields.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    providerFields.style.display = 'none';
+                }, 300);
+                
+                // Remove required attribute from provider fields
+                const providerInputs = providerFields.querySelectorAll('input, select, textarea');
+                providerInputs.forEach(input => {
+                    input.required = false;
+                });
+            }
+        });
+    });
+    
+    // Initialize provider fields state
+    providerFields.style.opacity = '0';
+    providerFields.style.transform = 'translateY(-10px)';
+    providerFields.style.transition = 'all 0.3s ease';
+    
+    // Check if provider is already selected on page load (for form errors)
+    const providerRadio = document.querySelector('input[name="user_type"][value="provider"]');
+    if (providerRadio && providerRadio.checked) {
+        providerFields.style.display = 'block';
+        setTimeout(() => {
+            providerFields.style.opacity = '1';
+            providerFields.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Make provider fields required
+        const providerInputs = providerFields.querySelectorAll('input, select, textarea');
+        providerInputs.forEach(input => {
+            input.required = true;
+        });
+    }
+});
+
+// Form validation for provider fields
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    const providerRadio = document.querySelector('input[name="user_type"][value="provider"]');
+    if (providerRadio && providerRadio.checked) {
+        const providerFields = document.getElementById('providerFields');
+        const requiredFields = providerFields.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.style.borderColor = '#f44336';
+            } else {
+                field.style.borderColor = '#e5e7eb';
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill all required provider details');
+        }
+    }
+});
+</script>
+{% endblock %}

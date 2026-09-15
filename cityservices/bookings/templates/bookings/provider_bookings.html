@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Provider Bookings | Local Services Marketplace{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="container container-medium">
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-clipboard-list" aria-hidden="true"></i> Provider tools</span>
+                <h1>Booking requests</h1>
+                <p class="sub">Confirm, start or complete the bookings customers sent for your services.</p>
+            </div>
+            <a class="btn btn-ghost" href="{% url 'accounts:provider_dashboard' %}">
+                <i class="fas fa-gauge-high" aria-hidden="true"></i> Dashboard
+            </a>
+        </div>
+
+        {% if bookings %}
+            <ul class="list">
+                {% for booking in bookings %}
+                    <li class="list-item">
+                        <div class="item-main">
+                            <p class="item-title">{{ booking.service.name }} for {{ booking.user.get_full_name|default:booking.user.username }}</p>
+                            <div class="item-meta">
+                                <span><i class="fas fa-calendar-day" aria-hidden="true"></i> {{ booking.date|date:"M d, Y h:i A" }}</span>
+                                <span><i class="fas fa-indian-rupee-sign" aria-hidden="true"></i> {{ booking.service.price }}</span>
+                                <span class="badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                            </div>
+                            {% if booking.notes %}
+                                <div class="item-meta">
+                                    <span><i class="fas fa-note-sticky" aria-hidden="true"></i> {{ booking.notes }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="item-side">
+                            {% if booking.status == 'pending' %}
+                                <form method="post" action="{% url 'bookings:update_booking_status' booking.id 'confirmed' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check" aria-hidden="true"></i> Confirm
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'bookings:update_booking_status' booking.id 'cancelled' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-xmark" aria-hidden="true"></i> Reject
+                                    </button>
+                                </form>
+                            {% elif booking.status == 'confirmed' %}
+                                <form method="post" action="{% url 'bookings:update_booking_status' booking.id 'in_progress' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-play" aria-hidden="true"></i> Start work
+                                    </button>
+                                </form>
+                            {% elif booking.status == 'in_progress' %}
+                                <form method="post" action="{% url 'bookings:update_booking_status' booking.id 'completed' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-flag-checkered" aria-hidden="true"></i> Mark completed
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="badge badge-muted">No action needed</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-inbox" aria-hidden="true"></i>
+                <h3>No booking requests yet</h3>
+                <p>Publish a service so customers can start booking you.</p>
+                <a class="btn btn-primary" href="{% url 'services:add_service' %}">Add a service</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

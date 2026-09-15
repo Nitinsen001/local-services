@@ -1,0 +1,1262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account · Local Services</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ============================================
+       CSS VARIABLES & RESET
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    :root {
+      --sky-50: #f0f9ff;
+      --sky-100: #e0f2fe;
+      --sky-200: #bae6fd;
+      --sky-300: #7dd3fc;
+      --sky-400: #38bdf8;
+      --sky-500: #0ea5e9;
+      --sky-600: #0284c7;
+      --sky-700: #0369a1;
+      --sky-800: #075985;
+      --sky-900: #0c3d66;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --transition: all 0.2s ease;
+    }
+
+    /* ============================================
+       SMOKY WHITE BACKGROUND
+       ============================================ */
+    body {
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(250, 250, 252, 0.95) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(248, 250, 252, 1) 0%, transparent 70%),
+        linear-gradient(150deg, #f1f5f9 0%, #e2e8f0 40%, #f8fafc 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 15% 25%, rgba(148, 163, 184, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 85% 75%, rgba(203, 213, 225, 0.1) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================
+       AUTH SHELL — COMPACT
+       ============================================ */
+    .auth-shell {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-card {
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 0.9fr 1.15fr;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 12px 32px -8px rgba(15, 23, 42, 0.08),
+        0 32px 64px -16px rgba(2, 132, 199, 0.12);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      animation: authEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      position: relative;
+    }
+
+    @keyframes authEnter {
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ============================================
+       LEFT — BRAND PANEL (Sky gradient) — COMPACT
+       ============================================ */
+    .auth-brand {
+      position: relative;
+      padding: 1.6rem 1.5rem;
+      background: linear-gradient(150deg, var(--sky-600), var(--sky-800));
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .auth-brand::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(ellipse at 20% 80%, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at 20% 80%, #000 30%, transparent 75%);
+      z-index: -1;
+    }
+
+    .auth-brand::after {
+      content: '';
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, transparent 65%);
+      top: -100px;
+      left: -80px;
+      filter: blur(20px);
+      z-index: -1;
+      animation: orbDrift 16s ease-in-out infinite;
+    }
+
+    @keyframes orbDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%      { transform: translate(20px, 20px) scale(1.1); }
+    }
+
+    .brand-top {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 800;
+      font-size: 0.92rem;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-top .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .brand-middle {
+      margin: 1rem 0;
+    }
+
+    .brand-middle h1 {
+      font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.55rem;
+    }
+
+    .brand-middle h1 .accent {
+      background: linear-gradient(120deg, #7dd3fc 0%, #e0f2fe 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-middle p {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.72rem;
+      line-height: 1.5;
+      max-width: 26ch;
+      margin: 0;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.9rem 0 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      opacity: 0;
+      animation: featureIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .feature-list li:nth-child(1) { animation-delay: 0.3s; }
+    .feature-list li:nth-child(2) { animation-delay: 0.4s; }
+    .feature-list li:nth-child(3) { animation-delay: 0.5s; }
+
+    @keyframes featureIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .feature-list li .fi {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .brand-bottom {
+      font-size: 0.62rem;
+      color: rgba(255, 255, 255, 0.55);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .brand-bottom .status-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
+      70%  { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+    }
+
+    /* ============================================
+       RIGHT — FORM PANEL (COMPACT)
+       ============================================ */
+    .auth-form-panel {
+      padding: 1.4rem 1.75rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #ffffff;
+      position: relative;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .form-head {
+      margin-bottom: 0.95rem;
+    }
+
+    .form-head .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--sky-700);
+      background: rgba(2, 132, 199, 0.08);
+      padding: 0.24rem 0.55rem;
+      border-radius: 999px;
+      margin-bottom: 0.55rem;
+    }
+
+    .form-head h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #111111;
+      margin: 0 0 0.2rem;
+    }
+
+    .form-head p {
+      color: #64748b;
+      font-size: 0.72rem;
+      margin: 0;
+    }
+
+    /* ============================================
+       FORM GRID
+       ============================================ */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 0.65rem;
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    /* Field wrapper */
+    .field {
+      position: relative;
+      margin-bottom: 0.7rem;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      height: 42px;
+      padding: 1.1rem 0.8rem 0.4rem 0.8rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #111111;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 9px;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .field textarea {
+      height: auto;
+      min-height: 60px;
+      resize: vertical;
+      padding-top: 1.2rem;
+    }
+
+    .field input:hover,
+    .field select:hover,
+    .field textarea:hover {
+      border-color: #cbd5e1;
+      background: #ffffff;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--sky-500);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    /* Floating label */
+    .field label {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #94a3b8;
+      pointer-events: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      background: transparent;
+      padding: 0 0.2rem;
+    }
+
+    .field textarea + label {
+      top: 1.2rem;
+    }
+
+    .field input:focus + label,
+    .field input:not(:placeholder-shown) + label,
+    .field input.has-value + label,
+    .field select:focus + label,
+    .field select.has-value + label,
+    .field textarea:focus + label,
+    .field textarea:not(:placeholder-shown) + label,
+    .field textarea.has-value + label {
+      top: 11px;
+      transform: translateY(-50%) scale(0.76);
+      color: var(--sky-700);
+      font-weight: 600;
+      background: #ffffff;
+      left: 0.65rem;
+    }
+
+    .field textarea:focus + label,
+    .field textarea:not(:placeholder-shown) + label,
+    .field textarea.has-value + label {
+      top: 7px;
+    }
+
+    /* Password toggle */
+    .field .toggle-pass {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      padding: 0.25rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .field .toggle-pass:hover {
+      color: var(--sky-700);
+      background: rgba(2, 132, 199, 0.08);
+    }
+
+    /* Field error */
+    .field .field-error {
+      display: flex;
+      align-items: center;
+      gap: 0.28rem;
+      color: #dc2626;
+      font-size: 0.62rem;
+      font-weight: 500;
+      margin-top: 0.25rem;
+      padding-left: 0.2rem;
+    }
+
+    .field.has-error input,
+    .field.has-error select,
+    .field.has-error textarea {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+
+    /* ============================================
+       ACCOUNT TYPE (RADIO CARDS) — COMPACT
+       ============================================ */
+    .account-type-container {
+      background: var(--gray-50);
+      border-radius: 10px;
+      padding: 0.7rem 0.75rem 0.5rem;
+      border: 1.5px solid var(--gray-200);
+      margin-bottom: 0.7rem;
+    }
+
+    .account-type-label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 0.45rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .account-type-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .account-type-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.45rem 0.55rem;
+      border-radius: 9px;
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .account-type-option:hover {
+      border-color: var(--sky-300);
+      background: var(--sky-50);
+    }
+
+    .account-type-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .account-type-option:has(input[type="radio"]:checked) {
+      border-color: var(--sky-500);
+      background: var(--sky-50);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .account-type-label-custom {
+      display: flex;
+      width: 100%;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .option-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      width: 100%;
+    }
+
+    .option-icon {
+      background: var(--sky-100);
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--sky-700);
+      font-size: 0.78rem;
+      flex-shrink: 0;
+    }
+
+    .account-type-option:has(input[type="radio"]:checked) .option-icon {
+      background: var(--sky-600);
+      color: var(--white);
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    .option-title {
+      font-weight: 600;
+      color: var(--gray-800);
+      font-size: 0.76rem;
+      margin-bottom: 0.08rem;
+    }
+
+    .option-description {
+      font-size: 0.6rem;
+      color: var(--gray-600);
+      line-height: 1.28;
+    }
+
+    /* ============================================
+       PROVIDER SECTION — COMPACT
+       ============================================ */
+    .provider-fields {
+      background: var(--sky-50);
+      border-radius: 10px;
+      padding: 0.85rem 0.85rem 0.55rem;
+      margin-top: 0.1rem;
+      border: 1.5px dashed var(--sky-300);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      margin-bottom: 0.7rem;
+    }
+
+    .provider-section-header {
+      margin-bottom: 0.65rem;
+    }
+
+    .provider-section-header h3 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--sky-800);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.08rem;
+    }
+
+    .provider-section-header h3 i {
+      color: var(--sky-600);
+      font-size: 0.75rem;
+    }
+
+    .provider-section-header p {
+      font-size: 0.62rem;
+      color: var(--sky-700);
+      opacity: 0.9;
+    }
+
+    .provider-fields .field input,
+    .provider-fields .field select,
+    .provider-fields .field textarea {
+      background: var(--white);
+    }
+
+    .provider-fields .field label {
+      background: var(--white);
+    }
+
+    /* ============================================
+       PASSWORD STRENGTH METER — COMPACT
+       ============================================ */
+    .strength-meter {
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .strength-meter.is-visible { display: block; }
+
+    .strength-bars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 0.2rem;
+    }
+
+    .strength-bars span {
+      flex: 1;
+      height: 3px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      transition: background 0.3s ease;
+    }
+
+    .strength-label {
+      font-size: 0.58rem;
+      font-weight: 600;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .strength-meter[data-level="1"] .strength-bars span:nth-child(-n+1) { background: #ef4444; }
+    .strength-meter[data-level="2"] .strength-bars span:nth-child(-n+2) { background: #f59e0b; }
+    .strength-meter[data-level="3"] .strength-bars span:nth-child(-n+3) { background: #eab308; }
+    .strength-meter[data-level="4"] .strength-bars span:nth-child(-n+4) { background: #10b981; }
+
+    .strength-meter[data-level="1"] .strength-label .strength-text { color: #ef4444; }
+    .strength-meter[data-level="2"] .strength-label .strength-text { color: #f59e0b; }
+    .strength-meter[data-level="3"] .strength-label .strength-text { color: #ca8a04; }
+    .strength-meter[data-level="4"] .strength-label .strength-text { color: #10b981; }
+
+    /* ============================================
+       SUBMIT BUTTON — COMPACT
+       ============================================ */
+    .btn-auth {
+      position: relative;
+      width: 100%;
+      height: 42px;
+      border: none;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--sky-600) 0%, var(--sky-800) 100%);
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.2s ease;
+      box-shadow: 0 6px 16px -6px rgba(2, 132, 199, 0.55);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .btn-auth::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--sky-700) 0%, var(--sky-900) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .btn-auth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -8px rgba(2, 132, 199, 0.65);
+    }
+
+    .btn-auth:hover::before { opacity: 1; }
+
+    .btn-auth:active {
+      transform: translateY(0);
+      box-shadow: 0 5px 12px -4px rgba(2, 132, 199, 0.5);
+    }
+
+    .btn-auth span,
+    .btn-auth i { position: relative; z-index: 1; }
+
+    .btn-auth i { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .btn-auth:hover i { transform: translateX(4px); }
+
+    /* ============================================
+       DIVIDER & SECONDARY BUTTON — COMPACT
+       ============================================ */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.65rem 0;
+      color: #94a3b8;
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+    }
+
+    .btn-ghost {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      width: 100%;
+      height: 38px;
+      border-radius: 9px;
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--sky-500);
+      background: rgba(2, 132, 199, 0.04);
+      color: var(--sky-700);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px -8px rgba(2, 132, 199, 0.4);
+    }
+
+    /* ============================================
+       TERMS CHECKBOX — COMPACT
+       ============================================ */
+    .form-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin: 0.1rem 0 0.85rem;
+      font-size: 0.7rem;
+    }
+
+    .check {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      cursor: pointer;
+      color: #475569;
+      font-weight: 500;
+      user-select: none;
+      line-height: 1.35;
+    }
+
+    .check input {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 4px;
+      background: #ffffff;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .check input:checked {
+      background: linear-gradient(135deg, var(--sky-600), var(--sky-700));
+      border-color: var(--sky-600);
+    }
+
+    .check input:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 0.5px;
+      width: 4px;
+      height: 8px;
+      border: solid #ffffff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .check input:focus-visible {
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+    }
+
+    .link-muted {
+      color: var(--sky-700);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .link-muted:hover { color: var(--sky-800); }
+
+    /* ============================================
+       ALERT / NON FIELD ERRORS
+       ============================================ */
+    .alert-danger {
+      background: #fef2f2;
+      border-left: 4px solid #dc2626;
+      color: #b91c1c;
+      padding: 0.5rem 0.7rem;
+      border-radius: 8px;
+      margin-bottom: 0.65rem;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 800px) {
+      .auth-card {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+      }
+
+      .auth-brand {
+        padding: 1.25rem 1.2rem;
+        min-height: auto;
+      }
+
+      .brand-middle { margin: 0.7rem 0 0.3rem; }
+      .brand-middle p { display: none; }
+      .feature-list { display: none; }
+      .brand-bottom { margin-top: 0.55rem; }
+
+      .auth-form-panel {
+        padding: 1.25rem 1.2rem 1.1rem;
+        max-height: none;
+      }
+
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .auth-shell { padding: 0.5rem 0.4rem; }
+      .auth-brand,
+      .auth-form-panel {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+      }
+      .form-head h2 { font-size: 1.1rem; }
+      .option-content { gap: 0.5rem; }
+      .option-icon {
+        width: 1.6rem;
+        height: 1.6rem;
+        font-size: 0.72rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-card">
+
+    <!-- ========= LEFT: BRAND ========= -->
+    <aside class="auth-brand">
+      <div class="brand-top">
+        <span class="brand-mark"><i class="fas fa-tools"></i></span>
+        <span>LocalServices</span>
+      </div>
+
+      <div class="brand-middle">
+        <h1>Join a smarter way to <span class="accent">find local services</span>.</h1>
+        <p>Create your account and start booking trusted providers or offer your own services.</p>
+
+        <ul class="feature-list">
+          <li>
+            <span class="fi"><i class="fas fa-user-check"></i></span>
+            Trusted local providers
+          </li>
+          <li>
+            <span class="fi"><i class="fas fa-bolt"></i></span>
+            Instant booking &amp; chat
+          </li>
+          <li>
+            <span class="fi"><i class="fas fa-shield-alt"></i></span>
+            Secure &amp; verified profiles
+          </li>
+        </ul>
+      </div>
+
+      <div class="brand-bottom">
+        <span class="status-dot"></span>
+        Free to join · No spam
+      </div>
+    </aside>
+
+    <!-- ========= RIGHT: FORM ========= -->
+    <section class="auth-form-panel">
+      <div class="form-head">
+        <span class="eyebrow"><i class="fas fa-user-plus"></i> Create Account</span>
+        <h2>Get started in seconds</h2>
+        <p>Join our local services marketplace.</p>
+      </div>
+
+      <form method="post" class="auth-form" id="registrationForm" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ form.non_field_errors.0 }}
+          </div>
+        {% endif %}
+
+        <div class="form-grid">
+          <!-- Username -->
+          <div class="field full {% if form.username.errors %}has-error{% endif %}" data-field-name="username">
+            {{ form.username }}
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {% if form.username.errors %}
+              <div class="field-error">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ form.username.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Email -->
+          <div class="field full {% if form.email.errors %}has-error{% endif %}" data-field-name="email">
+            {{ form.email }}
+            <label for="{{ form.email.id_for_label }}">Email</label>
+            {% if form.email.errors %}
+              <div class="field-error">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ form.email.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Account Type Selection -->
+        <div class="account-type-container">
+          <label class="account-type-label">I want to:</label>
+          <div class="account-type-options">
+            {% for radio in form.user_type %}
+              <div class="account-type-option">
+                {{ radio.tag }}
+                <label for="{{ radio.id_for_label }}" class="account-type-label-custom">
+                  <div class="option-content">
+                    <div class="option-icon">
+                      <i class="fas {% if radio.choice_value == 'provider' %}fa-tools{% else %}fa-user{% endif %}"></i>
+                    </div>
+                    <div class="option-text">
+                      <div class="option-title">{{ radio.choice_label }}</div>
+                      <div class="option-description">
+                        {% if radio.choice_value == 'provider' %}
+                          Offer services like plumbing, cleaning, electrical work, etc.
+                        {% else %}
+                          Book services from local providers in my area
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Provider Additional Fields -->
+        <div id="providerFields" class="provider-fields" style="display: none; opacity: 0; transform: translateY(-10px);">
+          <div class="provider-section-header">
+            <h3><i class="fas fa-tools"></i> Service Provider Details</h3>
+            <p>Please provide additional information about your services</p>
+          </div>
+
+          <div class="field full">
+            <select name="service_category" id="id_service_category">
+              <option value="" disabled selected></option>
+              <option value="plumbing">Plumbing</option>
+              <option value="electrical">Electrical</option>
+              <option value="cleaning">Cleaning</option>
+              <option value="painting">Painting</option>
+              <option value="carpentry">Carpentry</option>
+              <option value="gardening">Gardening</option>
+              <option value="beauty">Beauty &amp; Wellness</option>
+              <option value="other">Other</option>
+            </select>
+            <label for="id_service_category">Service Category</label>
+          </div>
+
+          <div class="field full">
+            <input type="number" name="hourly_rate" id="id_hourly_rate" min="0" step="50" placeholder=" ">
+            <label for="id_hourly_rate">Hourly Rate (₹)</label>
+          </div>
+
+          <div class="field full">
+            <input type="text" name="service_area" id="id_service_area" placeholder=" ">
+            <label for="id_service_area">Service Area (City/Locality)</label>
+          </div>
+
+          <div class="field full">
+            <textarea name="service_description" id="id_service_description" rows="3" placeholder=" "></textarea>
+            <label for="id_service_description">Service Description</label>
+          </div>
+
+          <div class="field full">
+            <input type="text" name="experience" id="id_experience" placeholder=" ">
+            <label for="id_experience">Years of Experience</label>
+          </div>
+        </div>
+
+        <!-- Password1 -->
+        <div class="field full {% if form.password1.errors %}has-error{% endif %}" data-field-name="password1">
+          {{ form.password1 }}
+          <label for="{{ form.password1.id_for_label }}">Password</label>
+          <button type="button" class="toggle-pass" data-target="{{ form.password1.id_for_label }}" aria-label="Toggle password visibility">
+            <i class="fas fa-eye"></i>
+          </button>
+          {% if form.password1.help_text %}
+            <small style="display:block; margin-top:0.25rem; font-size:0.58rem; color:#64748b; padding-left:0.2rem;">{{ form.password1.help_text }}</small>
+          {% endif %}
+          {% if form.password1.errors %}
+            <div class="field-error">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ form.password1.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Password Strength Meter -->
+        <div class="strength-meter" id="pwStrength">
+          <div class="strength-bars">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="strength-label">
+            <span class="strength-text">Password strength</span>
+            <span class="strength-hint">Use 8+ chars, mix letters &amp; numbers</span>
+          </div>
+        </div>
+
+        <!-- Password2 -->
+        <div class="field full {% if form.password2.errors %}has-error{% endif %}" data-field-name="password2">
+          {{ form.password2 }}
+          <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+          <button type="button" class="toggle-pass" data-target="{{ form.password2.id_for_label }}" aria-label="Toggle password visibility">
+            <i class="fas fa-eye"></i>
+          </button>
+          {% if form.password2.help_text %}
+            <small style="display:block; margin-top:0.25rem; font-size:0.58rem; color:#64748b; padding-left:0.2rem;">{{ form.password2.help_text }}</small>
+          {% endif %}
+          {% if form.password2.errors %}
+            <div class="field-error">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ form.password2.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Terms Checkbox -->
+        <div class="form-row">
+          <label class="check">
+            <input type="checkbox" name="terms" required />
+            <span>
+              I agree to the <a href="#" class="link-muted">Terms</a>
+              &amp; <a href="#" class="link-muted">Privacy Policy</a>
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-auth">
+          <span>Create Account</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+
+        <div class="divider">or</div>
+
+        <a href="{% url 'accounts:login' %}" class="btn-ghost">
+          <i class="fas fa-sign-in-alt"></i>
+          Already have an account? Sign In
+        </a>
+      </form>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    // ==== Password visibility toggle ====
+    document.querySelectorAll('.toggle-pass').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const input = document.getElementById(this.dataset.target);
+        if (!input) return;
+        const icon = this.querySelector('i');
+        const isPass = input.type === 'password';
+        input.type = isPass ? 'text' : 'password';
+        icon.classList.toggle('fa-eye', !isPass);
+        icon.classList.toggle('fa-eye-slash', isPass);
+      });
+    });
+
+    // ==== Mark inputs as has-value for floating label ====
+    const inputs = document.querySelectorAll('.field input, .field select, .field textarea');
+    inputs.forEach(function (input) {
+      if (input.value && input.value.length) input.classList.add('has-value');
+      input.addEventListener('input', function () {
+        this.classList.toggle('has-value', this.value.length > 0);
+      });
+      input.addEventListener('change', function () {
+        this.classList.toggle('has-value', this.value.length > 0);
+      });
+      if (!input.hasAttribute('placeholder')) {
+        input.setAttribute('placeholder', ' ');
+      }
+    });
+
+    // ==== Password strength meter ====
+    const pwInput = document.querySelector('input[name="password1"]');
+    const meter = document.getElementById('pwStrength');
+
+    if (pwInput && meter) {
+      const strengthText = meter.querySelector('.strength-text');
+      const hint = meter.querySelector('.strength-hint');
+
+      pwInput.addEventListener('input', function () {
+        const val = this.value;
+
+        if (!val.length) {
+          meter.classList.remove('is-visible');
+          meter.removeAttribute('data-level');
+          hint.style.display = '';
+          return;
+        }
+
+        meter.classList.add('is-visible');
+        hint.style.display = 'none';
+
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+        if (/\d/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+
+        score = Math.max(1, score);
+        meter.setAttribute('data-level', score);
+
+        const labels = ['', 'Weak password', 'Fair password', 'Good password', 'Strong password'];
+        strengthText.textContent = labels[score];
+      });
+    }
+
+    // ==== Show/hide provider fields ====
+    const providerFields = document.getElementById('providerFields');
+    const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+
+    function setProviderFieldsState(show) {
+      if (show) {
+        providerFields.style.display = 'block';
+        setTimeout(() => {
+          providerFields.style.opacity = '1';
+          providerFields.style.transform = 'translateY(0)';
+        }, 10);
+        providerFields.querySelectorAll('input, select, textarea').forEach(input => {
+          input.required = true;
+        });
+      } else {
+        providerFields.style.opacity = '0';
+        providerFields.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          providerFields.style.display = 'none';
+        }, 300);
+        providerFields.querySelectorAll('input, select, textarea').forEach(input => {
+          input.required = false;
+        });
+      }
+    }
+
+    userTypeRadios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        if (this.value === 'provider') {
+          setProviderFieldsState(true);
+        } else {
+          setProviderFieldsState(false);
+        }
+      });
+    });
+
+    // Initialize based on checked radio
+    const providerRadio = document.querySelector('input[name="user_type"][value="provider"]');
+    if (providerRadio && providerRadio.checked) {
+      setProviderFieldsState(true);
+    } else {
+      providerFields.style.opacity = '0';
+      providerFields.style.transform = 'translateY(-10px)';
+      providerFields.style.transition = 'all 0.3s ease';
+      providerFields.style.display = 'none';
+      providerFields.querySelectorAll('input, select, textarea').forEach(input => {
+        input.required = false;
+      });
+    }
+
+    // ==== Form validation for provider fields ====
+    document.getElementById('registrationForm').addEventListener('submit', function (e) {
+      const providerRadio = document.querySelector('input[name="user_type"][value="provider"]');
+      if (providerRadio && providerRadio.checked) {
+        const providerFields = document.getElementById('providerFields');
+        const requiredFields = providerFields.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+          if (!field.value.trim()) {
+            isValid = false;
+            field.style.borderColor = '#f44336';
+          } else {
+            field.style.borderColor = '#e2e8f0';
+          }
+        });
+
+        if (!isValid) {
+          e.preventDefault();
+          alert('Please fill all required provider details');
+        }
+      }
+    });
+
+    // ==== Smooth submit state ====
+    const form = document.getElementById('registrationForm');
+    if (form) {
+      form.addEventListener('submit', function () {
+        const btn = form.querySelector('.btn-auth');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.innerHTML = `
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span>Creating account…</span>
+        `;
+      });
+    }
+  })();
+</script>
+</body>
+</html>

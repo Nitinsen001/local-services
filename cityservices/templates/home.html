@@ -1,0 +1,452 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Services Marketplace | Book trusted local pros</title>
+    <meta name="description" content="Find, compare and book trusted local service providers for plumbing, electrical, cleaning, painting, carpentry, gardening and more.">
+    <meta name="theme-color" content="#0ea5e9">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="bg-orb orb-1" aria-hidden="true"></div>
+    <div class="bg-orb orb-2" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'home' %}">
+                <span class="brand-icon" aria-hidden="true"><i class="fas fa-screwdriver-wrench"></i></span>
+                <span>Local Services<small>Marketplace</small></span>
+            </a>
+
+            <nav class="main-nav" aria-label="Primary">
+                <a href="{% url 'services:service_list' %}" class="is-active">
+                    <i class="fas fa-compass" aria-hidden="true"></i> Browse services
+                </a>
+                <a href="{% url 'about' %}">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i> How it works
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% if user.profile.is_provider %}{% url 'accounts:provider_dashboard' %}{% else %}{% url 'accounts:user_dashboard' %}{% endif %}">
+                        <i class="fas fa-gauge-high" aria-hidden="true"></i> Dashboard
+                    </a>
+                    <a href="{% url 'accounts:profile' %}">
+                        <i class="fas fa-user" aria-hidden="true"></i> Profile
+                    </a>
+                {% endif %}
+            </nav>
+
+            <div class="header-actions">
+                <a class="icon-btn" href="{% if user.is_authenticated %}{% url 'accounts:notifications' %}{% else %}{% url 'accounts:login' %}{% endif %}" aria-label="Notifications">
+                    <i class="fas fa-bell" aria-hidden="true"></i>
+                    {% if unread_notification_count %}<span class="dot">{{ unread_notification_count }}</span>{% endif %}
+                </a>
+                {% if user.is_authenticated %}
+                    <a class="btn btn-ghost" href="{% url 'accounts:logout' %}">
+                        <i class="fas fa-arrow-right-from-bracket" aria-hidden="true"></i> Logout
+                    </a>
+                {% else %}
+                    <a class="btn btn-ghost" href="{% url 'accounts:login' %}">Login</a>
+                    <a class="btn btn-primary" href="{% url 'accounts:register' %}">Get started</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main id="main" class="page">
+        <div class="container">
+            <!-- Hero -->
+            <section class="hero">
+                <div>
+                    <span class="pill">
+                        <i class="fas fa-bolt" aria-hidden="true"></i> Verified local professionals
+                    </span>
+                    <h1>Book trusted <span class="grad">local services</span> in a few taps</h1>
+                    <p class="hero-sub">
+                        Compare prices, read real customer reviews and book plumbers, electricians,
+                        cleaners, painters and more &mdash; right in your neighbourhood.
+                    </p>
+
+                    <form class="search" method="get" action="{% url 'services:service_list' %}" role="search">
+                        <i class="fas fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                        <label class="sr-only" for="homeSearch">Search services</label>
+                        <input id="homeSearch" type="search" name="q" value="{{ query }}"
+                               placeholder="Try &ldquo;plumber&rdquo;, &ldquo;deep cleaning&rdquo; or your area">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search" aria-hidden="true"></i> Search
+                        </button>
+                    </form>
+
+                    <div class="chips" aria-label="Popular categories">
+                        {% for category in categories|slice:":6" %}
+                            <a class="chip" href="{% url 'services:service_list' %}?category={{ category.name|urlencode }}">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <aside class="hero-card" aria-label="Marketplace summary">
+                    <h2>Marketplace at a glance</h2>
+                    <div class="stat-row">
+                        <span>Services listed</span><strong>{{ total_services }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>Service providers</span><strong>{{ total_providers }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>Categories</span><strong>{{ total_categories }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>Average provider rating</span>
+                        <strong>
+                            {% if average_rating %}{{ average_rating }} <i class="fas fa-star" aria-hidden="true"></i>{% else %}&mdash;{% endif %}
+                        </strong>
+                    </div>
+                    <p class="hero-note">
+                        <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                        Pay after the work is done, then rate your provider once the booking is complete.
+                    </p>
+                </aside>
+            </section>
+
+            <!-- Quick filters -->
+            <nav class="chips" aria-label="Service filters">
+                <a class="chip" href="{% url 'services:service_list' %}"><i class="fas fa-list" aria-hidden="true"></i> All services</a>
+                <a class="chip" href="{% url 'services:service_list' %}?filter=top_rated"><i class="fas fa-star" aria-hidden="true"></i> Top rated</a>
+                <a class="chip" href="{% url 'services:service_list' %}?filter=near_me{% if query %}&amp;q={{ query|urlencode }}{% endif %}"><i class="fas fa-location-dot" aria-hidden="true"></i> Near me</a>
+                <a class="chip" href="{% url 'services:service_list' %}?filter=new"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i> New providers</a>
+            </nav>
+
+            <div class="layout">
+                <div class="stack">
+                    <!-- Featured services -->
+                    <section aria-labelledby="featuredHeading">
+                        <div class="section-head">
+                            <div>
+                                <h2 id="featuredHeading">Featured services</h2>
+                                <p class="sub">Hand-picked listings from providers on the marketplace</p>
+                            </div>
+                            <a class="link-more" href="{% url 'services:service_list' %}">
+                                View all <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+
+                        {% if featured_services %}
+                            <div class="services-grid">
+                                {% for service in featured_services %}
+                                    <article class="service-card">
+                                        <div class="service-media">
+                                            {% if service.image %}
+                                                <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                                            {% else %}
+                                                <div class="service-thumb" aria-hidden="true">
+                                                    <i class="{{ service.category.icon_class }}"></i>
+                                                </div>
+                                            {% endif %}
+                                            <span class="service-badge">Featured</span>
+                                        </div>
+                                        <div class="service-body">
+                                            <span class="service-cat">{{ service.category.name }}</span>
+                                            <h3 class="service-name">
+                                                <a href="{% url 'services:service_detail' service.id %}">{{ service.name }}</a>
+                                            </h3>
+                                            <p class="service-desc">{{ service.description|truncatechars:78 }}</p>
+                                            <div class="service-meta">
+                                                <span>
+                                                    <i class="fas fa-location-dot" aria-hidden="true"></i>
+                                                    {{ service.location|default:"Local area" }}
+                                                </span>
+                                                {% if service.review_count %}
+                                                    <span>
+                                                        <i class="fas fa-star" aria-hidden="true"></i>
+                                                        {{ service.average_rating|floatformat:1 }} ({{ service.review_count }})
+                                                    </span>
+                                                {% else %}
+                                                    <span class="is-new">
+                                                        <i class="fas fa-circle-info" aria-hidden="true"></i> New listing
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="service-foot">
+                                            <span class="price">&#8377;{{ service.price|floatformat:0 }}<small>/service</small></span>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'services:service_detail' service.id %}">Book now</a>
+                                        </div>
+                                        <a class="card-link" href="{% url 'services:service_detail' service.id %}"
+                                           aria-label="View details for {{ service.name }}"></a>
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty">
+                                <i class="fas fa-box-open" aria-hidden="true"></i>
+                                <h3>No featured services right now</h3>
+                                <p>Browse everything that is currently available, or check back in a little while.</p>
+                                <a class="btn btn-primary" href="{% url 'services:service_list' %}">Browse all services</a>
+                            </div>
+                        {% endif %}
+                    </section>
+
+                    <!-- Categories -->
+                    <section aria-labelledby="categoryHeading">
+                        <div class="section-head">
+                            <div>
+                                <h2 id="categoryHeading">Browse by category</h2>
+                                <p class="sub">{{ total_categories }} categories on the marketplace</p>
+                            </div>
+                            <a class="link-more" href="{% url 'services:service_list' %}">
+                                All categories <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+
+                        {% if categories %}
+                            <div class="category-grid">
+                                {% for category in categories %}
+                                    <a class="category-card" href="{% url 'services:service_list' %}?category={{ category.name|urlencode }}">
+                                        <span class="icon" aria-hidden="true"><i class="{{ category.icon_class }}"></i></span>
+                                        <span class="name">{{ category.name }}</span>
+                                        <span class="count">{{ category.service_count }} service{{ category.service_count|pluralize }}</span>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty">
+                                <i class="fas fa-layer-group" aria-hidden="true"></i>
+                                <h3>No categories yet</h3>
+                                <p>Categories appear here as soon as they are added from the admin panel.</p>
+                            </div>
+                        {% endif %}
+                    </section>
+
+                    <!-- Top providers -->
+                    <section aria-labelledby="providerHeading">
+                        <div class="section-head">
+                            <div>
+                                <h2 id="providerHeading">Top rated providers</h2>
+                                <p class="sub">Providers with published services, ranked by customer rating</p>
+                            </div>
+                            <a class="link-more" href="{% url 'services:service_list' %}?filter=top_rated">
+                                See more <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+
+                        {% if top_providers %}
+                            <div class="provider-list">
+                                {% for provider in top_providers %}
+                                    <article class="provider-card">
+                                        <div class="avatar">
+                                            {% if provider.profile.avatar %}
+                                                <img src="{{ provider.profile.avatar.url }}" alt="{{ provider.username }}">
+                                            {% else %}
+                                                <span class="avatar-initials" aria-hidden="true">{{ provider.get_full_name|default:provider.username|slice:":1" }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="provider-info">
+                                            <h3 class="provider-name">{{ provider.get_full_name|default:provider.username }}</h3>
+                                            <p class="provider-sub">
+                                                {% if provider.profile.service_category %}
+                                                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> {{ provider.profile.get_service_category_display }}</span>
+                                                {% endif %}
+                                                {% if provider.profile.service_area %}
+                                                    <span class="sep" aria-hidden="true">&bull;</span>
+                                                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> {{ provider.profile.service_area }}</span>
+                                                {% endif %}
+                                            </p>
+                                            <div class="provider-rating">
+                                                {% if provider.profile.review_count %}
+                                                    <i class="fas fa-star" aria-hidden="true"></i>
+                                                    <span class="score">{{ provider.profile.rating|floatformat:1 }}</span>
+                                                    <span>({{ provider.profile.review_count }} review{{ provider.profile.review_count|pluralize }})</span>
+                                                {% else %}
+                                                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                                                    <span>New provider &mdash; no reviews yet</span>
+                                                {% endif %}
+                                                <span class="sep" aria-hidden="true">&bull;</span>
+                                                <span>{{ provider.service_count }} service{{ provider.service_count|pluralize }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="provider-actions">
+                                            {% if provider.min_price %}
+                                                <span class="price-tag">From &#8377;{{ provider.min_price|floatformat:0 }}</span>
+                                            {% endif %}
+                                            <a class="btn btn-sm btn-outline" href="{% url 'services:service_list' %}?provider={{ provider.id }}">View services</a>
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty">
+                                <i class="fas fa-user-group" aria-hidden="true"></i>
+                                <h3>No providers listed yet</h3>
+                                <p>Be the first professional to publish a service on the marketplace.</p>
+                                <a class="btn btn-primary" href="{% url 'accounts:register' %}">Become a provider</a>
+                            </div>
+                        {% endif %}
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div class="panel">
+                        <h2>How it works</h2>
+                        <ul class="steps">
+                            <li>
+                                <span class="step-num">1</span>
+                                <span>
+                                    <strong>Search a service</strong>
+                                    <span class="step-text">Filter by category, rating, area or keyword.</span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="step-num">2</span>
+                                <span>
+                                    <strong>Book your slot</strong>
+                                    <span class="step-text">Pick a date and time and add instructions.</span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="step-num">3</span>
+                                <span>
+                                    <strong>Get it done &amp; review</strong>
+                                    <span class="step-text">Pay after the visit and rate your provider.</span>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="panel">
+                        <h2>Quick actions</h2>
+                        <div class="panel-actions">
+                            {% if user.is_authenticated %}
+                                <a class="btn btn-primary" href="{% url 'bookings:my_bookings' %}">
+                                    <i class="fas fa-calendar-check" aria-hidden="true"></i> My bookings
+                                </a>
+                                <a class="btn btn-outline" href="{% url 'services:favorite_list' %}">
+                                    <i class="fas fa-heart" aria-hidden="true"></i> My favourites
+                                </a>
+                                {% if user.profile.is_provider %}
+                                    <a class="btn btn-ghost" href="{% url 'services:add_service' %}">
+                                        <i class="fas fa-plus" aria-hidden="true"></i> Add a service
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'services:service_list' %}">
+                                    <i class="fas fa-compass" aria-hidden="true"></i> Browse services
+                                </a>
+                                <a class="btn btn-outline" href="{% url 'accounts:register' %}">
+                                    <i class="fas fa-user-plus" aria-hidden="true"></i> Create free account
+                                </a>
+                                <a class="btn btn-ghost" href="{% url 'accounts:login' %}">
+                                    <i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i> Login
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="panel panel-accent">
+                        <h2>Are you a service professional?</h2>
+                        <p>Publish your services, manage booking requests and grow with customer reviews.</p>
+                        <div class="panel-actions">
+                            <a class="btn" href="{% url 'accounts:register' %}">
+                                <i class="fas fa-briefcase" aria-hidden="true"></i> Become a provider
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h2>Why people trust us</h2>
+                        <ul class="checklist">
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Provider profiles with real ratings and reviews</li>
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Booking date, time and notes in your control</li>
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> In-app notifications for every booking update</li>
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Pay after the service is completed</li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Local Services</h3>
+                    <ul>
+                        <li><a href="{% url 'about' %}">About us</a></li>
+                        <li><a href="{% url 'about' %}">How it works</a></li>
+                        <li><a href="{% url 'contact' %}">Contact us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>For customers</h3>
+                    <ul>
+                        <li><a href="{% url 'services:service_list' %}">Browse services</a></li>
+                        <li><a href="{% url 'bookings:my_bookings' %}">My bookings</a></li>
+                        <li><a href="{% url 'services:favorite_list' %}">My favourites</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>For providers</h3>
+                    <ul>
+                        <li><a href="{% url 'accounts:register' %}">Become a provider</a></li>
+                        <li><a href="{% url 'services:add_service' %}">Add a service</a></li>
+                        <li><a href="{% url 'services:availability' %}">Manage availability</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="{% url 'contact' %}">Help centre</a></li>
+                        <li><a href="{% url 'accounts:notifications' %}">Notifications</a></li>
+                        <li><a href="{% url 'accounts:profile' %}">My profile</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} Local Services Marketplace. All rights reserved.</p>
+                <div class="socials" aria-label="Social links">
+                    <a href="{% url 'contact' %}" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                    <a href="{% url 'contact' %}" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                    <a href="{% url 'contact' %}" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                    <a href="{% url 'contact' %}" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Progressive enhancement: reveal sections as they scroll into view.
+        // Skipped entirely when the visitor prefers reduced motion or the browser
+        // has no IntersectionObserver, so content is never hidden by JS.
+        document.addEventListener('DOMContentLoaded', function () {
+            var targets = document.querySelectorAll('.stack > section, .sidebar > .panel');
+            var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (!('IntersectionObserver' in window) || reduceMotion) {
+                return;
+            }
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+
+            targets.forEach(function (target) {
+                target.classList.add('reveal');
+                observer.observe(target);
+            });
+        });
+    </script>
+</body>
+</html>

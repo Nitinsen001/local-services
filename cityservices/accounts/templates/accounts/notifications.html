@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Notifications | Local Services Marketplace{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="container container-medium">
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-bell" aria-hidden="true"></i> Updates</span>
+                <h1>Notifications</h1>
+                <p class="sub">Booking, review and message updates land here. Opening this page marks them as read.</p>
+            </div>
+            <a class="btn btn-ghost" href="{% url 'home' %}">
+                <i class="fas fa-house" aria-hidden="true"></i> Home
+            </a>
+        </div>
+
+        {% if notifications %}
+            <ul class="list">
+                {% for notification in notifications %}
+                    <li class="list-item {% if not notification.is_read %}is-unread{% endif %}">
+                        <div class="item-main">
+                            <p class="item-title">{{ notification.message }}</p>
+                            <div class="item-meta">
+                                <span><i class="fas fa-clock" aria-hidden="true"></i> {{ notification.created_at|date:"M d, Y h:i A" }}</span>
+                                {% if notification.notification_type %}
+                                    <span class="badge badge-info">{{ notification.get_notification_type_display }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="item-side">
+                            {% if notification.link %}
+                                <a class="btn btn-sm btn-outline" href="{{ notification.link }}">
+                                    Open <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-bell-slash" aria-hidden="true"></i>
+                <h3>No notifications yet</h3>
+                <p>Book a service or publish your own listing and updates will show up here.</p>
+                <a class="btn btn-primary" href="{% url 'services:service_list' %}">Browse services</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Account Settings | Local Services Marketplace{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="container container-narrow">
+        <a class="back-link" href="{% url 'accounts:profile' %}">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to profile
+        </a>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-sliders" aria-hidden="true"></i> Account</span>
+                <h1>Account settings</h1>
+                <p class="sub">Update your name, username and email address.</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <form method="post" class="form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-floppy-disk" aria-hidden="true"></i> Save changes
+                    </button>
+                    <a class="btn btn-ghost" href="{% url 'accounts:profile' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

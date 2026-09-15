@@ -1,0 +1,476 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+   <div class="auth-card">
+       <div class="auth-header">
+           <div class="auth-icon">
+               <i class="fas fa-sign-in-alt"></i>
+           </div>
+           <h1>Welcome Back</h1>
+           <p>Sign in to your account</p>
+       </div>
+
+       <form method="post" class="auth-form">
+           {% csrf_token %}
+
+           <div class="form-group">
+               <div class="input-container">
+                   <i class="fas fa-user input-icon"></i>
+                   {{ form.username }}
+                   <label for="{{ form.username.id_for_label }}">Username</label>
+               </div>
+           </div>
+
+           <div class="form-group">
+               <div class="input-container">
+                   <i class="fas fa-lock input-icon"></i>
+                   {{ form.password }}
+                   <label for="{{ form.password.id_for_label }}">Password</label>
+                   <i class="fas fa-eye toggle-password" onclick="togglePassword(this)"></i>
+               </div>
+           </div>
+
+           {% if form.errors %}
+           <div class="error-messages">
+               {% for field in form %}
+                   {% for error in field.errors %}
+                       <div class="error-item">
+                           <i class="fas fa-exclamation-circle"></i>
+                           {{ error }}
+                       </div>
+                   {% endfor %}
+               {% endfor %}
+               {% for error in form.non_field_errors %}
+                   <div class="error-item">
+                       <i class="fas fa-exclamation-circle"></i>
+                       {{ error }}
+                   </div>
+               {% endfor %}
+           </div>
+           {% endif %}
+
+           <div class="form-options">
+               <label class="checkbox-container">
+                   <input type="checkbox" name="remember" id="remember">
+                   <span class="checkmark"></span>
+                   Remember me
+               </label>
+               <a href="#" class="forgot-link">Forgot password?</a>
+           </div>
+
+           <button type="submit" class="auth-btn primary">
+               <i class="fas fa-sign-in-alt"></i>
+               Sign In
+           </button>
+       </form>
+
+       <div class="auth-footer">
+           <p>Don't have an account?
+               <a href="{% url 'accounts:register' %}" class="auth-link">Create Account</a>
+           </p>
+       </div>
+
+       <div class="social-login">
+           <div class="divider">
+               <span>or continue with</span>
+           </div>
+           <div class="social-buttons">
+               <button class="social-btn google">
+                   <i class="fab fa-google"></i>
+                   Google
+               </button>
+               <button class="social-btn facebook">
+                   <i class="fab fa-facebook-f"></i>
+                   Facebook
+               </button>
+           </div>
+       </div>
+   </div>
+</div>
+
+<style>
+.auth-container {
+   min-height: calc(100vh - 140px);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 40px 20px;
+   position: relative;
+   z-index: 1;
+}
+
+.auth-card {
+   background: rgba(255, 255, 255, 0.95);
+   backdrop-filter: blur(20px);
+   border-radius: 24px;
+   padding: 40px;
+   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+   width: 100%;
+   max-width: 480px;
+   border: 1px solid rgba(255, 255, 255, 0.2);
+   animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+   from {
+       opacity: 0;
+       transform: translateY(40px);
+   }
+   to {
+       opacity: 1;
+       transform: translateY(0);
+   }
+}
+
+.auth-header {
+   text-align: center;
+   margin-bottom: 40px;
+}
+
+.auth-icon {
+   width: 80px;
+   height: 80px;
+   background: linear-gradient(135deg, #10b981, #059669);
+   border-radius: 20px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   margin: 0 auto 20px;
+   font-size: 32px;
+   color: white;
+   box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+}
+
+.auth-header h1 {
+   font-size: 28px;
+   font-weight: 700;
+   color: #1f2937;
+   margin-bottom: 8px;
+}
+
+.auth-header p {
+   color: #6b7280;
+   font-size: 16px;
+}
+
+.auth-form {
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+}
+
+.form-group {
+   position: relative;
+}
+
+.input-container {
+   position: relative;
+   display: flex;
+   align-items: center;
+}
+
+.input-container input {
+   width: 100%;
+   padding: 16px 20px 16px 50px;
+   border: 2px solid #e5e7eb;
+   border-radius: 12px;
+   font-size: 16px;
+   background: rgba(255, 255, 255, 0.8);
+   transition: all 0.3s ease;
+   outline: none;
+   color: #1f2937;
+}
+
+.input-container input:focus {
+   border-color: #10b981;
+   background: white;
+   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.input-container label {
+   position: absolute;
+   left: 50px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: #9ca3af;
+   pointer-events: none;
+   transition: all 0.3s ease;
+   background: transparent;
+   padding: 0 8px;
+}
+
+.input-container input:focus + label,
+.input-container input:not(:placeholder-shown) + label {
+   top: 0;
+   left: 16px;
+   font-size: 12px;
+   color: #10b981;
+   background: white;
+   transform: translateY(-50%);
+}
+
+.input-icon {
+   position: absolute;
+   left: 16px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: #9ca3af;
+   font-size: 18px;
+   z-index: 2;
+   transition: color 0.3s ease;
+}
+
+.input-container input:focus ~ .input-icon {
+   color: #10b981;
+}
+
+.toggle-password {
+   position: absolute;
+   right: 16px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: #9ca3af;
+   cursor: pointer;
+   font-size: 16px;
+   transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+   color: #10b981;
+}
+
+.error-messages {
+   background: #fef2f2;
+   border: 1px solid #fecaca;
+   border-radius: 12px;
+   padding: 16px;
+   margin-bottom: 8px;
+}
+
+.error-item {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   color: #dc2626;
+   font-size: 14px;
+   margin-bottom: 8px;
+}
+
+.error-item:last-child {
+   margin-bottom: 0;
+}
+
+.error-item i {
+   font-size: 16px;
+}
+
+.form-options {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin: 8px 0;
+}
+
+.checkbox-container {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   cursor: pointer;
+   font-size: 14px;
+   color: #6b7280;
+}
+
+.checkbox-container input[type="checkbox"] {
+   width: 16px;
+   height: 16px;
+   accent-color: #10b981;
+}
+
+.forgot-link {
+   color: #10b981;
+   text-decoration: none;
+   font-size: 14px;
+   font-weight: 500;
+   transition: color 0.3s ease;
+}
+
+.forgot-link:hover {
+   color: #059669;
+}
+
+.auth-btn {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 12px;
+   padding: 16px 24px;
+   border: none;
+   border-radius: 12px;
+   font-size: 16px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   text-decoration: none;
+   margin-top: 8px;
+}
+
+.auth-btn.primary {
+   background: linear-gradient(135deg, #10b981, #059669);
+   color: white;
+   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.auth-btn.primary:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.auth-footer {
+   text-align: center;
+   margin-top: 32px;
+   padding-top: 24px;
+   border-top: 1px solid #e5e7eb;
+}
+
+.auth-footer p {
+   color: #6b7280;
+   margin: 0;
+}
+
+.auth-link {
+   color: #10b981;
+   text-decoration: none;
+   font-weight: 600;
+   transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+   color: #059669;
+}
+
+.social-login {
+   margin-top: 32px;
+}
+
+.divider {
+   position: relative;
+   text-align: center;
+   margin: 24px 0;
+}
+
+.divider::before {
+   content: '';
+   position: absolute;
+   top: 50%;
+   left: 0;
+   right: 0;
+   height: 1px;
+   background: #e5e7eb;
+}
+
+.divider span {
+   background: rgba(255, 255, 255, 0.95);
+   padding: 0 16px;
+   color: #6b7280;
+   font-size: 14px;
+   position: relative;
+   z-index: 1;
+}
+
+.social-buttons {
+   display: flex;
+   gap: 12px;
+}
+
+.social-btn {
+   flex: 1;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 8px;
+   padding: 12px 16px;
+   border: 2px solid #e5e7eb;
+   border-radius: 10px;
+   background: white;
+   color: #6b7280;
+   font-size: 14px;
+   font-weight: 500;
+   cursor: pointer;
+   transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+   border-color: #d1d5db;
+   background: #f9fafb;
+   transform: translateY(-1px);
+}
+
+.social-btn.google:hover {
+   border-color: #ea4335;
+   color: #ea4335;
+}
+
+.social-btn.facebook:hover {
+   border-color: #1877f2;
+   color: #1877f2;
+}
+
+@media (max-width: 640px) {
+   .auth-container {
+       padding: 20px 16px;
+   }
+
+   .auth-card {
+       padding: 32px 24px;
+   }
+
+   .auth-header h1 {
+       font-size: 24px;
+   }
+
+   .auth-icon {
+       width: 64px;
+       height: 64px;
+       font-size: 24px;
+   }
+
+   .form-options {
+       flex-direction: column;
+       gap: 12px;
+       align-items: flex-start;
+   }
+
+   .social-buttons {
+       flex-direction: column;
+   }
+}
+</style>
+
+<script>
+function togglePassword(icon) {
+   const input = icon.parentElement.querySelector('input');
+   if (input.type === 'password') {
+       input.type = 'text';
+       icon.classList.remove('fa-eye');
+       icon.classList.add('fa-eye-slash');
+   } else {
+       input.type = 'password';
+       icon.classList.remove('fa-eye-slash');
+       icon.classList.add('fa-eye');
+   }
+}
+
+// Add focus/blur effects for better UX
+document.querySelectorAll('.input-container input').forEach(input => {
+   input.addEventListener('focus', function() {
+       this.parentElement.style.transform = 'scale(1.02)';
+       this.parentElement.style.transition = 'transform 0.2s ease';
+   });
+
+   input.addEventListener('blur', function() {
+       this.parentElement.style.transform = 'scale(1)';
+   });
+});
+</script>
+{% endblock %}

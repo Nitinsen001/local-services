@@ -1,0 +1,590 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .reviews-section {
+        position: relative;
+        min-height: 100vh;
+        padding: 40px 20px 80px;
+        z-index: 2;
+    }
+
+    .reviews-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 3;
+    }
+
+    .reviews-header {
+        text-align: center;
+        margin-bottom: 50px;
+        animation: fadeInDown 0.8s ease;
+    }
+
+    .reviews-header h1 {
+        font-size: 3rem;
+        color: #0c4a6e;
+        margin-bottom: 15px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 10px rgba(14, 165, 233, 0.1);
+    }
+
+    .reviews-header .subtitle {
+        font-size: 1.2rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .reviews-stats {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    /* Overall Rating Card */
+    .rating-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(14, 165, 233, 0.15);
+        text-align: center;
+        animation: fadeInLeft 0.8s ease;
+    }
+
+    .overall-rating {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #0c4a6e;
+        margin-bottom: 10px;
+        line-height: 1;
+    }
+
+    .stars-large {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+
+    .star {
+        color: #fbbf24;
+        font-size: 2rem;
+    }
+
+    .total-reviews {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
+
+    .rating-breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .rating-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .rating-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        width: 80px;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .bar-container {
+        flex: 1;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        border-radius: 10px;
+        transition: width 1s ease;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2);
+        border-color: #0ea5e9;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto 15px;
+        box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0c4a6e;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Reviews List */
+    .reviews-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .review-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 25px rgba(14, 165, 233, 0.1);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .review-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(14, 165, 233, 0.15);
+        border-color: #0ea5e9;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .reviewer-avatar {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.3rem;
+        box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
+    }
+
+    .reviewer-details h3 {
+        color: #0c4a6e;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+
+    .review-date {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .review-rating {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .rating-stars {
+        display: flex;
+        gap: 3px;
+    }
+
+    .rating-star {
+        color: #fbbf24;
+        font-size: 1.1rem;
+    }
+
+    .rating-value {
+        font-weight: 700;
+        color: #0c4a6e;
+        font-size: 1.1rem;
+    }
+
+    .review-content {
+        color: #475569;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+
+    .review-service {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(14, 165, 233, 0.1);
+        color: #0ea5e9;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(14, 165, 233, 0.15);
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        color: #cbd5e1;
+        margin-bottom: 25px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    .empty-state h2 {
+        color: #0c4a6e;
+        font-size: 2rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 40px;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 12px 18px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 10px;
+        color: #0c4a6e;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .pagination a:hover {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: #0ea5e9;
+        transform: translateY(-2px);
+    }
+
+    .pagination .current {
+        background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .reviews-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .reviews-header h1 {
+            font-size: 2.2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .review-header {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .reviewer-info {
+            width: 100%;
+        }
+
+        .review-rating {
+            align-self: flex-start;
+        }
+
+        .overall-rating {
+            font-size: 3rem;
+        }
+
+        .stars-large .star {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="reviews-section">
+    <div class="reviews-container">
+        <!-- Header -->
+        <div class="reviews-header">
+            <h1>Customer Reviews</h1>
+            <p class="subtitle">What our customers say about our services</p>
+        </div>
+
+        <!-- Reviews Stats -->
+        <div class="reviews-stats">
+            <!-- Overall Rating -->
+            <div class="rating-card">
+                <div class="overall-rating">{{ average_rating|default:"4.8" }}/5</div>
+                <div class="stars-large">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= average_rating|default:4.8 %}
+                            <div class="star">★</div>
+                        {% else %}
+                            <div class="star" style="color: #cbd5e1;">★</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="total-reviews">{{ reviews.count }} Reviews</div>
+                
+                <div class="rating-breakdown">
+                    {% for i in "54321" reversed %}
+                    <div class="rating-bar">
+                        <div class="rating-label">
+                            <span>{{ forloop.counter }}</span>
+                            <span>★</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: {{ forloop.counter|add:"0"|multiply:20 }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <div class="stat-value">{{ positive_reviews|default:"89" }}%</div>
+                    <div class="stat-label">Positive Reviews</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-reply"></i>
+                    </div>
+                    <div class="stat-value">{{ responded_reviews|default:"95" }}%</div>
+                    <div class="stat-label">Responded To</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">{{ repeat_customers|default:"78" }}%</div>
+                    <div class="stat-label">Repeat Customers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews List -->
+        {% if reviews %}
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">
+                            {{ review.user.first_name.0|default:review.user.username.0 }}
+                        </div>
+                        <div class="reviewer-details">
+                            <h3>{{ review.user.get_full_name|default:review.user.username }}</h3>
+                            <div class="review-date">{{ review.created_at|date:"F d, Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        <div class="rating-stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <div class="rating-star">★</div>
+                                {% else %}
+                                    <div class="rating-star" style="color: #cbd5e1;">★</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="rating-value">{{ review.rating }}/5</div>
+                    </div>
+                </div>
+                
+                <div class="review-content">
+                    {{ review.comment }}
+                </div>
+                
+                {% if review.service %}
+                <div class="review-service">
+                    <i class="fas fa-concierge-bell"></i>
+                    {{ review.service.name }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1"><i class="fas fa-angle-double-left"></i></a>
+                <a href="?page={{ page_obj.previous_page_number }}"><i class="fas fa-angle-left"></i></a>
+            {% endif %}
+            
+            <span class="current">{{ page_obj.number }}</span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><i class="fas fa-angle-right"></i></a>
+                <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fas fa-angle-double-right"></i></a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <h2>No Reviews Yet</h2>
+            <p>You haven't received any reviews yet. Reviews will appear here once customers rate your services.</p>
+            <p>Keep providing excellent service to get your first review!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Animate rating bars on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const bars = document.querySelectorAll('.bar-fill');
+        bars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+
+        // Add hover effects to review cards
+        const reviewCards = document.querySelectorAll('.review-card');
+        reviewCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}

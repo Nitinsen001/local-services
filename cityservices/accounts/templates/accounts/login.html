@@ -1,0 +1,662 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Local Services Marketplace{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     CSS VARIABLES & RESET
+     ============================================ */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  :root {
+    --sky-50: #f0f9ff;
+    --sky-100: #e0f2fe;
+    --sky-200: #bae6fd;
+    --sky-300: #7dd3fc;
+    --sky-400: #38bdf8;
+    --sky-500: #0ea5e9;
+    --sky-600: #0284c7;
+    --sky-700: #0369a1;
+    --sky-800: #075985;
+    --sky-900: #0c3d66;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --white: #ffffff;
+    --transition: all 0.2s ease;
+  }
+
+  /* ============================================
+     SMOKY WHITE BACKGROUND
+     ============================================ */
+  .page {
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(250, 250, 252, 0.95) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(248, 250, 252, 1) 0%, transparent 70%),
+      linear-gradient(150deg, #f1f5f9 0%, #e2e8f0 40%, #f8fafc 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 25%, rgba(148, 163, 184, 0.08) 0%, transparent 35%),
+      radial-gradient(circle at 85% 75%, rgba(203, 213, 225, 0.1) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page .container {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-wrap {
+    width: 100%;
+  }
+
+  /* ============================================
+     AUTH CARD (two-panel grid)
+     ============================================ */
+  .auth-card {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 0.9fr 1.15fr;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 12px 32px -8px rgba(15, 23, 42, 0.08),
+      0 32px 64px -16px rgba(2, 132, 199, 0.12);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    animation: authEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    position: relative;
+  }
+
+  @keyframes authEnter {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Override the default .panel style inside the card */
+  .auth-card.panel {
+    padding: 0;
+    background: #ffffff;
+  }
+
+  /* ============================================
+     LEFT — BRAND PANEL (Sky gradient)
+     ============================================ */
+  .auth-brand {
+    position: relative;
+    padding: 1.6rem 1.5rem;
+    background: linear-gradient(150deg, var(--sky-600), var(--sky-800));
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .auth-brand::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(ellipse at 20% 80%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 20% 80%, #000 30%, transparent 75%);
+    z-index: -1;
+  }
+
+  .auth-brand::after {
+    content: '';
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, transparent 65%);
+    top: -100px;
+    left: -80px;
+    filter: blur(20px);
+    z-index: -1;
+    animation: orbDrift 16s ease-in-out infinite;
+  }
+
+  @keyframes orbDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(20px, 20px) scale(1.1); }
+  }
+
+  .brand-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 0.92rem;
+    letter-spacing: -0.01em;
+  }
+
+  .brand-top .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    backdrop-filter: blur(8px);
+  }
+
+  .brand-middle {
+    margin: 1rem 0;
+  }
+
+  .brand-middle h1 {
+    font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+    font-weight: 800;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.55rem;
+  }
+
+  .brand-middle h1 .accent {
+    background: linear-gradient(120deg, #7dd3fc 0%, #e0f2fe 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .brand-middle p {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    max-width: 26ch;
+    margin: 0;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.9rem 0 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    opacity: 0;
+    animation: featureIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .feature-list li:nth-child(1) { animation-delay: 0.3s; }
+  .feature-list li:nth-child(2) { animation-delay: 0.4s; }
+  .feature-list li:nth-child(3) { animation-delay: 0.5s; }
+
+  @keyframes featureIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .feature-list li .fi {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: #ffffff;
+    flex-shrink: 0;
+  }
+
+  .brand-bottom {
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.55);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .brand-bottom .status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+    animation: pulseDot 2s infinite;
+  }
+
+  @keyframes pulseDot {
+    0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
+    70%  { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+  }
+
+  /* ============================================
+     RIGHT — FORM PANEL (COMPACT)
+     ============================================ */
+  .auth-form-panel {
+    padding: 1.4rem 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #ffffff;
+    position: relative;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .form-head {
+    margin-bottom: 0.95rem;
+  }
+
+  .form-head .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sky-700);
+    background: rgba(2, 132, 199, 0.08);
+    padding: 0.24rem 0.55rem;
+    border-radius: 999px;
+    margin-bottom: 0.55rem;
+  }
+
+  .form-head h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #111111;
+    margin: 0 0 0.2rem;
+  }
+
+  .form-head p {
+    color: #64748b;
+    font-size: 0.72rem;
+    margin: 0;
+  }
+
+  /* ============================================
+     FORM FIELDS
+     ============================================ */
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 0.7rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.3rem;
+    padding-left: 0.1rem;
+  }
+
+  .form-group input {
+    width: 100%;
+    height: 42px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #111111;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .form-group input:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+  }
+
+  .form-group input:focus {
+    border-color: var(--sky-500);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+  }
+
+  /* Password wrap */
+  .password-wrap {
+    position: relative;
+  }
+
+  .password-wrap input {
+    padding-right: 2.6rem;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    padding: 0.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+  }
+
+  .password-toggle:hover {
+    color: var(--sky-700);
+    background: rgba(2, 132, 199, 0.08);
+  }
+
+  /* Form error */
+  .form-error {
+    display: flex;
+    align-items: center;
+    gap: 0.28rem;
+    color: #dc2626;
+    font-size: 0.62rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    padding-left: 0.2rem;
+  }
+
+  /* ============================================
+     ALERT / NON FIELD ERRORS
+     ============================================ */
+  .alert {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .alert-error {
+    background: #fef2f2;
+    border-left: 4px solid #dc2626;
+    color: #b91c1c;
+  }
+
+  /* ============================================
+     SUBMIT BUTTON
+     ============================================ */
+  .form-actions {
+    margin-top: 0.25rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    position: relative;
+    width: 100%;
+    height: 42px;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--sky-600) 0%, var(--sky-800) 100%);
+    overflow: hidden;
+    box-shadow: 0 6px 16px -6px rgba(2, 132, 199, 0.55);
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--sky-700) 0%, var(--sky-900) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px rgba(2, 132, 199, 0.65);
+  }
+
+  .btn-primary:hover::before { opacity: 1; }
+
+  .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 12px -4px rgba(2, 132, 199, 0.5);
+  }
+
+  .btn-primary span,
+  .btn-primary i { position: relative; z-index: 1; }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* ============================================
+     AUTH ALT LINKS
+     ============================================ */
+  .auth-alt {
+    text-align: center;
+    font-size: 0.72rem;
+    color: #64748b;
+    margin: 0.55rem 0 0;
+    line-height: 1.4;
+  }
+
+  .auth-alt:first-of-type {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .text-link {
+    color: var(--sky-700);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .text-link:hover {
+    color: var(--sky-800);
+    text-decoration: underline;
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 800px) {
+    .auth-card {
+      grid-template-columns: 1fr;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .auth-brand {
+      padding: 1.25rem 1.2rem;
+      min-height: auto;
+    }
+
+    .brand-middle { margin: 0.7rem 0 0.3rem; }
+    .brand-middle p { display: none; }
+    .feature-list { display: none; }
+    .brand-bottom { margin-top: 0.55rem; }
+
+    .auth-form-panel {
+      padding: 1.25rem 1.2rem 1.1rem;
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page { padding: 0.5rem 0.4rem; }
+    .auth-brand,
+    .auth-form-panel {
+      padding-left: 0.9rem;
+      padding-right: 0.9rem;
+    }
+    .form-head h2 { font-size: 1.1rem; }
+  }
+</style>
+
+<div class="page">
+  <div class="container">
+    <div class="auth-wrap">
+      <div class="panel auth-card">
+
+        <!-- ========= LEFT: BRAND ========= -->
+        <aside class="auth-brand">
+          <div class="brand-top">
+            <span class="brand-mark"><i class="fas fa-tools"></i></span>
+            <span>LocalServices</span>
+          </div>
+
+          <div class="brand-middle">
+            <h1>Welcome back to <span class="accent">LocalServices</span>.</h1>
+            <p>Sign in to manage your bookings, chat with providers, and track your services.</p>
+
+            <ul class="feature-list">
+              <li>
+                <span class="fi"><i class="fas fa-user-check"></i></span>
+                Trusted local providers
+              </li>
+              <li>
+                <span class="fi"><i class="fas fa-bolt"></i></span>
+                Instant booking &amp; chat
+              </li>
+              <li>
+                <span class="fi"><i class="fas fa-shield-alt"></i></span>
+                Secure &amp; verified profiles
+              </li>
+            </ul>
+          </div>
+
+          <div class="brand-bottom">
+            <span class="status-dot"></span>
+            Free to join · No spam
+          </div>
+        </aside>
+
+        <!-- ========= RIGHT: FORM ========= -->
+        <section class="auth-form-panel">
+          <div class="form-head">
+            <span class="eyebrow"><i class="fas fa-right-to-bracket"></i> Sign In</span>
+            <h2>Welcome back</h2>
+            <p>Sign in to manage your bookings and services.</p>
+          </div>
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-error" role="alert">
+              <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+              <span>{{ form.non_field_errors.0 }}</span>
+            </div>
+          {% endif %}
+
+          <form method="post" class="form">
+            {% csrf_token %}
+
+            <div class="form-group">
+              <label for="{{ form.username.id_for_label }}">Username</label>
+              {{ form.username }}
+              {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.password.id_for_label }}">Password</label>
+              <div class="password-wrap">
+                {{ form.password }}
+                <button type="button" class="password-toggle" data-toggle-password aria-label="Show password">
+                  <i class="fas fa-eye" aria-hidden="true"></i>
+                </button>
+              </div>
+              {% if form.password.errors %}<div class="form-error">{{ form.password.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-right-to-bracket" aria-hidden="true"></i> Sign in
+              </button>
+            </div>
+          </form>
+
+          <p class="auth-alt">Don't have an account? <a class="text-link" href="{% url 'accounts:register' %}">Create one</a></p>
+          <p class="auth-alt">Offer services instead? <a class="text-link" href="{% url 'accounts:register' %}">Become a provider</a></p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Toggle password visibility without touching inline styles.
+  document.querySelectorAll('[data-toggle-password]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const input = button.parentElement.querySelector('input');
+      const icon = button.querySelector('i');
+      const isHidden = input.type === 'password';
+
+      input.type = isHidden ? 'text' : 'password';
+      icon.classList.toggle('fa-eye', !isHidden);
+      icon.classList.toggle('fa-eye-slash', isHidden);
+      button.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+  });
+</script>
+{% endblock %}

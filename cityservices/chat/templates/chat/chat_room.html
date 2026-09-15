@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Chat{% if target %} with {{ target.get_full_name|default:target.username }}{% endif %} | Local Services Marketplace{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="container container-medium">
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-comments" aria-hidden="true"></i> Messages</span>
+                <h1>Chat room</h1>
+                <p class="sub">Discuss details with the other person before the visit. Messages are stored on the platform.</p>
+            </div>
+            <a class="btn btn-ghost" href="{% url 'bookings:my_bookings' %}">
+                <i class="fas fa-calendar-check" aria-hidden="true"></i> My bookings
+            </a>
+        </div>
+
+        {% if target %}
+            <div class="panel chat-shell">
+                <div class="chat-head">
+                    <span class="avatar avatar-sm">
+                        <span class="avatar-initials">{{ target.get_full_name|default:target.username|slice:":1" }}</span>
+                    </span>
+                    <div>
+                        <p class="item-title">{{ target.get_full_name|default:target.username }}</p>
+                        <p class="item-sub">Connected over your shared booking</p>
+                    </div>
+                </div>
+
+                <div class="chat-log" id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
+                    <p class="chat-bubble">Say hello and share the details of your booking.</p>
+                </div>
+
+                <form class="chat-form" id="chat-form">
+                    <label class="sr-only" for="chat-input">Message</label>
+                    <input id="chat-input" type="text" placeholder="Write a message..." autocomplete="off" required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i> Send
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-comments" aria-hidden="true"></i>
+                <h3>No conversation selected</h3>
+                <p>Open a chat from a booking with your provider or customer.</p>
+                <a class="btn btn-primary" href="{% url 'bookings:my_bookings' %}">Go to my bookings</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if target %}
+<script>
+    (function () {
+        const currentUser = "{{ user.username|escapejs }}";
+        const log = document.getElementById('chat-messages');
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('chat-input');
+        const socketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const socket = new WebSocket(`${socketProtocol}://${window.location.host}/ws/chat/{{ target.id }}/`);
+
+        function addBubble(text, isMine) {
+            // textContent (not innerHTML) keeps incoming messages from being
+            // interpreted as markup.
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble' + (isMine ? ' is-mine' : '');
+            bubble.textContent = text;
+            log.appendChild(bubble);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        socket.onmessage = function (event) {
+            try {
+                const data = JSON.parse(event.data);
+                addBubble(data.message, data.sender === currentUser);
+            } catch (error) {
+                addBubble(event.data, false);
+            }
+        };
+
+        socket.onclose = function () {
+            const note = document.createElement('p');
+            note.className = 'chat-bubble';
+            note.textContent = 'Chat disconnected. Reload the page to reconnect.';
+            log.appendChild(note);
+        };
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const message = input.value.trim();
+            if (!message || socket.readyState !== WebSocket.OPEN) {
+                return;
+            }
+            socket.send(JSON.stringify({ message: message }));
+            input.value = '';
+            input.focus();
+        });
+    })();
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Weekly Availability | Local Services Marketplace{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="container container-medium">
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-clock" aria-hidden="true"></i> Provider tools</span>
+                <h1>Weekly availability</h1>
+                <p class="sub">Add recurring slots so customers can only book times that suit you.</p>
+            </div>
+            <a class="btn btn-ghost" href="{% url 'accounts:provider_dashboard' %}">
+                <i class="fas fa-gauge-high" aria-hidden="true"></i> Dashboard
+            </a>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Add a slot</h2>
+            </div>
+            <form method="post" class="form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Add slot
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Configured slots</h2>
+                <span class="badge badge-info">{{ slots|length }} slot{{ slots|length|pluralize }}</span>
+            </div>
+
+            {% if slots %}
+                <ul class="list">
+                    {% for slot in slots %}
+                        <li class="list-item">
+                            <div class="item-main">
+                                <p class="item-title">{{ slot.get_weekday_display }}</p>
+                                <div class="item-meta">
+                                    <span><i class="fas fa-clock" aria-hidden="true"></i> {{ slot.start_time|time:"h:i A" }} &ndash; {{ slot.end_time|time:"h:i A" }}</span>
+                                </div>
+                            </div>
+                            <div class="item-side">
+                                {% if slot.is_active %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-muted">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty">
+                    <i class="fas fa-calendar-plus" aria-hidden="true"></i>
+                    <h3>No slots configured</h3>
+                    <p>Until slots are added, bookings stay open by request.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

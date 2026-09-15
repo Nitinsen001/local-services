@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}My bookings | Local Services Marketplace{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="container container-medium">
+        <a class="back-link" href="{% url 'accounts:user_dashboard' %}">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to dashboard
+        </a>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow"><i class="fas fa-calendar-check" aria-hidden="true"></i> Your bookings</span>
+                <h1>My bookings</h1>
+                <p class="sub">Track every service you booked, cancel upcoming ones and review completed work.</p>
+            </div>
+            <a class="btn btn-ghost" href="{% url 'bookings:billing_history' %}">
+                <i class="fas fa-receipt" aria-hidden="true"></i> Billing &amp; payments
+            </a>
+        </div>
+
+        {% if bookings %}
+            <ul class="list">
+                {% for booking in bookings %}
+                    <li class="list-item">
+                        <div class="item-main">
+                            <p class="item-title">{{ booking.service.name }}</p>
+                            <div class="item-meta">
+                                <span>
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                    {{ booking.service.provider.get_full_name|default:booking.service.provider.username }}
+                                </span>
+                                <span><i class="fas fa-calendar-day" aria-hidden="true"></i> {{ booking.date|date:"M d, Y h:i A" }}</span>
+                                <span><i class="fas fa-location-dot" aria-hidden="true"></i> {{ booking.service.location|default:"Not specified" }}</span>
+                                <span><i class="fas fa-indian-rupee-sign" aria-hidden="true"></i> {{ booking.service.price|floatformat:0 }}</span>
+                                <span class="badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                            </div>
+                            {% if booking.notes %}
+                                <div class="item-meta">
+                                    <span><i class="fas fa-note-sticky" aria-hidden="true"></i> {{ booking.notes }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="item-side">
+                            <a class="btn btn-sm btn-outline" href="{% url 'services:service_detail' booking.service.id %}">View service</a>
+                            {% if booking.status == 'completed' %}
+                                <a class="btn btn-sm btn-primary" href="{% url 'reviews:add_review' booking.service.id %}">
+                                    <i class="fas fa-star" aria-hidden="true"></i> Review
+                                </a>
+                            {% endif %}
+                            {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                                <form method="post" action="{% url 'bookings:cancel_booking' booking.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-xmark" aria-hidden="true"></i> Cancel
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-calendar-xmark" aria-hidden="true"></i>
+                <h3>No bookings yet</h3>
+                <p>Browse the marketplace and book your first service &mdash; it takes a couple of taps.</p>
+                <a class="btn btn-primary" href="{% url 'services:service_list' %}">Browse services</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
