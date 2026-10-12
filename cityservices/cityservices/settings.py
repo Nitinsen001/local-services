@@ -15,7 +15,9 @@ import secrets
 import sys
 from pathlib import Path
 
+import dj_database_url
 from decouple import Csv, config
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,18 +26,37 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
+DEBUG = config('DEBUG', default=False, cast=bool)
+IS_VERCEL = bool(os.environ.get('VERCEL'))
+if IS_VERCEL and DEBUG:
+    raise ImproperlyConfigured('DEBUG must be False on Vercel.')
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default=f'dev-{secrets.token_urlsafe(50)}')
+SECRET_KEY = config(
+    'SECRET_KEY',
+    default=f'dev-{secrets.token_urlsafe(50)}' if DEBUG else '',
+)
+if not SECRET_KEY:
+    raise ImproperlyConfigured('Set SECRET_KEY to a unique secret in production.')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
-
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='127.0.0.1,localhost,testserver' if 'test' in sys.argv else '127.0.0.1,localhost',
+    default=(
+        '.vercel.app'
+        if IS_VERCEL
+        else '127.0.0.1,localhost,testserver'
+        if 'test' in sys.argv
+        else '127.0.0.1,localhost'
+    ),
     cast=Csv(),
 )
 IS_PRODUCTION = not DEBUG
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='https://*.vercel.app' if IS_VERCEL else '',
+    cast=Csv(),
+)
 
 
 # Application definition
@@ -56,6 +77,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -101,12 +123,28 @@ else:
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASE_URL = config('DATABASE_URL', default='')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=0,
+            ssl_require=IS_PRODUCTION,
+        )
     }
-}
+    if IS_VERCEL and DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql':
+        raise ImproperlyConfigured('DATABASE_URL on Vercel must use PostgreSQL.')
+elif IS_PRODUCTION:
+    raise ImproperlyConfigured(
+        'Set DATABASE_URL to a persistent PostgreSQL database in production.'
+    )
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -143,12 +181,49 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='')
+if IS_VERCEL and not AWS_STORAGE_BUCKET_NAME:
+    raise ImproperlyConfigured(
+        'Set AWS_STORAGE_BUCKET_NAME to persistent object storage on Vercel.'
+    )
+if IS_VERCEL and not (
+    config('AWS_ACCESS_KEY_ID', default='')
+    and config('AWS_SECRET_ACCESS_KEY', default='')
+):
+    raise ImproperlyConfigured(
+        'Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for Vercel media storage.'
+    )
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    },
+}
+if AWS_STORAGE_BUCKET_NAME:
+    INSTALLED_APPS.append('storages')
+    s3_options = {
+        'bucket_name': AWS_STORAGE_BUCKET_NAME,
+        'region_name': config('AWS_S3_REGION_NAME', default='us-east-1'),
+        'default_acl': None,
+        'querystring_auth': False,
+    }
+    s3_endpoint_url = config('AWS_S3_ENDPOINT_URL', default='')
+    if s3_endpoint_url:
+        s3_options['endpoint_url'] = s3_endpoint_url
+    STORAGES['default'] = {
+        'BACKEND': 'storages.backends.s3.S3Storage',
+        'OPTIONS': s3_options,
+    }
 
 EMAIL_BACKEND = config(
     'EMAIL_BACKEND',
@@ -174,6 +249,7 @@ SECURE_SSL_REDIRECT = config(
     default=IS_PRODUCTION and 'test' not in sys.argv,
     cast=bool,
 )
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_HSTS_SECONDS = 31536000 if IS_PRODUCTION else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = IS_PRODUCTION
 SECURE_HSTS_PRELOAD = IS_PRODUCTION

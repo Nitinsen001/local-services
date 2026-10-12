@@ -189,3 +189,29 @@ python manage.py test
 ```
 
 `check --deploy` local `.env` me `SECURE_SSL_REDIRECT=False` hone par warning de sakta hai; production me ise `True` set karein. Media files local development me `media/` ke andar serve hoti hain.
+
+## Vercel deployment
+
+The Vercel configuration in this repository deploys Django's HTTP/WSGI app as a Python Function. In the Vercel project settings, set **Root Directory** to `cityservices` and leave **Include source files outside of the Root Directory** disabled. The included build command runs `collectstatic`; WhiteNoise serves the collected assets.
+
+Before the first deployment, add these environment variables in Vercel for the Production and Preview environments:
+
+| Variable | Required value |
+| --- | --- |
+| `SECRET_KEY` | A unique, long random secret; do not reuse a development key |
+| `DEBUG` | `False` |
+| `DATABASE_URL` | A managed PostgreSQL connection URL (use the provider's pooled URL if available) |
+| `AWS_STORAGE_BUCKET_NAME` | An S3-compatible bucket for persistent profile and service images |
+| `AWS_S3_REGION_NAME` | The bucket's region |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Credentials restricted to the media bucket |
+| `AWS_S3_ENDPOINT_URL` | Optional endpoint URL when using an S3-compatible provider other than AWS |
+| `ALLOWED_HOSTS` | `.vercel.app` plus any custom hostname |
+| `CSRF_TRUSTED_ORIGINS` | `https://*.vercel.app` plus each custom origin with its `https://` scheme |
+
+Create the database and bucket with their providers first. Apply Django migrations to the production database before accepting traffic (`python manage.py migrate` with the production `DATABASE_URL` set in a trusted local environment). The local SQLite database and local `media/` directory are not deployed as persistent data; migrate any existing records and upload any existing images separately. Do not put production credentials in Git or `.env.example`.
+
+The repository already has a tracked `.env` file. `.gitignore` and `.vercelignore` now prevent local environment files from being included in a deployment, but remove that tracked file from the Git repository and rotate any credentials that may have been committed before connecting the repository to Vercel.
+
+Vercel Functions do not provide persistent WebSocket connections, so the app's Channels-based live chat will not work on this deployment. Use a WebSocket-capable host for the Django ASGI app or move chat to a separately hosted realtime service if live chat is required. Vercel is suitable here for the HTTP site, but it cannot host every existing feature on its own.
+
+After configuring the environment variables, import the repository into Vercel, deploy, then create an admin account against the production database if needed. Configure Razorpay and SMTP environment variables separately if those optional features are enabled.
