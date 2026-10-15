@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "build": "python manage.py collectstatic --noinput"
+    "build": "mkdir -p public/static && cp -R staticfiles/static/. public/static/"
   }
 }
