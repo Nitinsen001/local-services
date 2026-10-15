@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "build": "mkdir -p public/static && cp -R staticfiles/static/. public/static/"
+    "build": "node -e \"console.log('Using committed static files')\""
   }
 }
